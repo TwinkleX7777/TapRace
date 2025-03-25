@@ -1,74 +1,43 @@
-/* General Styling */
 body {
-    font-family: 'Poppins', sans-serif;
     text-align: center;
-    background: linear-gradient(to right, #141E30, #243B55);
-    color: #fff;
-    padding: 20px;
+    font-family: Arial, sans-serif;
+    transition: background 0.5s ease-in-out;
+    background: url('background1.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
 }
 
-/* Game Container */
-.game-container {
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+h1, h2 {
+    text-shadow: 2px 2px 10px black;
 }
 
-/* Title */
-.game-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-/* Score & Timer */
-#timer, #score {
-    font-size: 22px;
-    margin: 10px 0;
-}
-
-/* Tap Button */
-#tap-button {
+#tap-button, #change-theme {
     font-size: 24px;
     padding: 15px;
-    width: 100%;
-    background: linear-gradient(45deg, #ff416c, #ff4b2b);
-    color: white;
+    margin: 10px;
     border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(255, 69, 96, 0.4);
-    transition: transform 0.1s ease, box-shadow 0.2s ease;
     cursor: pointer;
-}
-
-#tap-button:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 5px rgba(255, 69, 96, 0.3);
-}
-
-/* Leaderboard */
-.leaderboard {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
 }
 
-.leaderboard h2 {
-    font-size: 20px;
+#tap-button {
+    background-color: #ff5722;
+    color: white;
 }
 
-#leaderboard-list {
+#change-theme {
+    background-color: #007bff;
+    color: white;
+}
+
+#leaderboard {
     list-style: none;
     padding: 0;
 }
 
-#leaderboard-list li {
-    background: rgba(0, 0, 0, 0.3);
+#leaderboard li {
+    background: rgba(0, 0, 0, 0.5);
     padding: 10px;
-    margin: 5px 0;
+    margin: 5px;
     border-radius: 5px;
 }
