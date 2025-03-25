@@ -1,30 +1,49 @@
 body {
+    background-color: #121212;
+    color: white;
     text-align: center;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
 }
 
 h1 {
-    color: #333;
-}
-
-#tap-button {
-    font-size: 24px;
-    padding: 15px 30px;
-    margin: 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 10px;
-}
-
-#tap-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+    font-size: 2.5em;
+    color: #00ffcc;
+    text-shadow: 0 0 10px #00ffcc;
 }
 
 #timer, #score {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 1.5em;
+    margin: 10px;
+}
+
+#tap-button {
+    background: #00ffcc;
+    color: black;
+    font-size: 1.5em;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px #00ffcc;
+}
+
+#tap-button:hover {
+    background: #00b38f;
+    box-shadow: 0 0 25px #00b38f;
+}
+
+#leaderboard {
+    margin-top: 20px;
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #444;
+}
+
+li {
+    list-style: none;
+    font-size: 1.2em;
+    padding: 5px;
+    color: #00ffcc;
 }
