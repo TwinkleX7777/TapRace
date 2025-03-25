@@ -1,49 +1,50 @@
 body {
-    background-color: #121212;
-    color: white;
+    background-color: #ffeb3b;
+    color: #333;
     text-align: center;
     font-family: Arial, sans-serif;
 }
 
 h1 {
     font-size: 2.5em;
-    color: #00ffcc;
-    text-shadow: 0 0 10px #00ffcc;
+    color: #ff5722;
+    text-shadow: 2px 2px white;
 }
 
 #timer, #score {
     font-size: 1.5em;
     margin: 10px;
+    color: #d84315;
 }
 
 #tap-button {
-    background: #00ffcc;
-    color: black;
+    background: #ff5722;
+    color: white;
     font-size: 1.5em;
     padding: 15px 30px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     transition: 0.3s;
-    box-shadow: 0 0 15px #00ffcc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #tap-button:hover {
-    background: #00b38f;
-    box-shadow: 0 0 25px #00b38f;
+    background: #e64a19;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 #leaderboard {
     margin-top: 20px;
-    background: #222;
+    background: white;
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0 0 15px #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 li {
     list-style: none;
     font-size: 1.2em;
     padding: 5px;
-    color: #00ffcc;
+    color: #ff5722;
 }
