@@ -7,6 +7,9 @@ const firebaseConfig = {
   messagingSenderId: "93332718324",
   appId: "1:93332718324:web:4b48350c0b64061eb794a1"
 };
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 let score = 0;
 let timeLeft = 10;
 let timer;
@@ -23,7 +26,16 @@ function startTimer() {
         if (timeLeft === 0) {
             clearInterval(timer);
             document.getElementById("tap-button").disabled = true;
-            alert("Time's up! You tapped " + score + " times.");
+            const playerName = prompt("Enter your name:");
+if (playerName) {
+    const playerRef = database.ref("players").push();
+    playerRef.set({
+        name: playerName,
+        score: score
+    });
+}
+alert("Time's up! You tapped " + score + " times.");
+
         }
     }, 1000);
 }
