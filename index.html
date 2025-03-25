@@ -3,40 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>Tap Race</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        #tap-button {
-            font-size: 24px;
-            padding: 20px;
-            margin: 20px;
-        }
-        #timer, #score {
-            font-size: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Tap Race</h1>
     <p id="timer">Time: 10s</p>
     <p id="score">Taps: 0</p>
     <button id="tap-button">Tap Me!</button>
-
-    <!-- Leaderboard -->
-    <div id="leaderboard">
-        <h2>Leaderboard</h2>
-        <ul id="leaderboard-list"></ul>
-    </div>
-
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
-    <!-- Game Script -->
-    <script src="script.js?v=1.0"></script>
+    <button id="change-theme">Change Theme</button>
+    
+    <script src="script.js"></script>
 </body>
 </html>
