@@ -1,50 +1,74 @@
+/* General Styling */
 body {
-    background-color: #ffeb3b;
-    color: #333;
+    font-family: 'Poppins', sans-serif;
     text-align: center;
-    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #141E30, #243B55);
+    color: #fff;
+    padding: 20px;
 }
 
-h1 {
-    font-size: 2.5em;
-    color: #ff5722;
-    text-shadow: 2px 2px white;
+/* Game Container */
+.game-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Title */
+.game-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Score & Timer */
 #timer, #score {
-    font-size: 1.5em;
-    margin: 10px;
-    color: #d84315;
+    font-size: 22px;
+    margin: 10px 0;
 }
 
+/* Tap Button */
 #tap-button {
-    background: #ff5722;
+    font-size: 24px;
+    padding: 15px;
+    width: 100%;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
     color: white;
-    font-size: 1.5em;
-    padding: 15px 30px;
     border: none;
     border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(255, 69, 96, 0.4);
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-#tap-button:hover {
-    background: #e64a19;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+#tap-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(255, 69, 96, 0.3);
 }
 
-#leaderboard {
+/* Leaderboard */
+.leaderboard {
     margin-top: 20px;
-    background: white;
     padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-li {
+.leaderboard h2 {
+    font-size: 20px;
+}
+
+#leaderboard-list {
     list-style: none;
-    font-size: 1.2em;
-    padding: 5px;
-    color: #ff5722;
+    padding: 0;
+}
+
+#leaderboard-list li {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
 }
