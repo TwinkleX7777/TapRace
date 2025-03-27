@@ -31,3 +31,6 @@ document.getElementById("logout-btn").addEventListener("click", () => {
         document.getElementById("login-page").style.display = "block";
     });
 });
+function loadPage(page) {
+    document.getElementById("content").innerHTML = `<iframe src="${page}" width="100%" height="600px" style="border:none;"></iframe>`;
+}
