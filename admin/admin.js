@@ -34,3 +34,25 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 function loadPage(page) {
     document.getElementById("content").innerHTML = `<iframe src="${page}" width="100%" height="600px" style="border:none;"></iframe>`;
 }
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("manage-players").addEventListener("click", function () {
+        document.getElementById("content").innerHTML = '<object type="text/html" data="admin/players.html" width="100%" height="500px"></object>';
+    });
+
+    document.getElementById("manage-leaderboard").addEventListener("click", function () {
+        document.getElementById("content").innerHTML = '<object type="text/html" data="admin/leaderboard.html" width="100%" height="500px"></object>';
+    });
+
+    document.getElementById("manage-withdrawals").addEventListener("click", function () {
+        document.getElementById("content").innerHTML = '<object type="text/html" data="admin/withdrawals.html" width="100%" height="500px"></object>';
+    });
+
+    document.getElementById("manage-ads").addEventListener("click", function () {
+        document.getElementById("content").innerHTML = '<object type="text/html" data="admin/ads.html" width="100%" height="500px"></object>';
+    });
+
+    document.getElementById("settings").addEventListener("click", function () {
+        document.getElementById("content").innerHTML = '<object type="text/html" data="admin/settings.html" width="100%" height="500px"></object>';
+    });
+});
+
