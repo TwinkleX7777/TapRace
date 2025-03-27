@@ -73,3 +73,16 @@ function updateLeaderboard() {
 
 updateLeaderboard();
 startTimer();
+
+// 🔥 Interstitial Ads - Controlled from Firebase
+database.ref("ads/interstitial").on("value", (snapshot) => {
+    if (snapshot.val() === "on") {
+        showInterstitialAd();
+    }
+});
+
+function showInterstitialAd() {
+    let script = document.createElement("script");
+    script.src = "https://groleegni.net/401/9139187";
+    document.body.appendChild(script);
+}
