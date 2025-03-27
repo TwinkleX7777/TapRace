@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Tap Race</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <div id="login-page">
+        <h2>Admin Login</h2>
+        <input type="email" id="email" placeholder="Enter email">
+        <input type="password" id="password" placeholder="Enter password">
+        <button id="login-btn">Login</button>
+        <p id="login-error" style="color: red;"></p>
+    </div>
+
+    <div id="admin-dashboard" style="display: none;">
+        <h1>Admin Panel</h1>
+        <button id="logout-btn">Logout</button>
+        
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="#" id="manage-players">Manage Players</a></li>
+            <li><a href="#" id="manage-leaderboard">Leaderboard Control</a></li>
+            <li><a href="#" id="manage-withdrawals">Withdraw Requests</a></li>
+            <li><a href="#" id="manage-ads">Ads Management</a></li>
+            <li><a href="#" id="settings">Settings</a></li>
+        </ul>
+        
+        <div id="content">
+            <p>Select an option from the menu.</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
