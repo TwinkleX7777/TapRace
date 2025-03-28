@@ -8,8 +8,23 @@
 </head>
 <body>
     <h2>Withdraw Requests</h2>
-    <div id="withdraw-list">
-        <!-- Pending and completed withdrawals will show here -->
-    </div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="withdrawal-list">
+            <!-- Withdrawal requests will load here -->
+        </tbody>
+    </table>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="withdrawals.js"></script>
 </body>
 </html>
