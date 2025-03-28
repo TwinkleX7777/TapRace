@@ -1,4 +1,5 @@
 console.log("✅ Firebase Script Loaded:", typeof firebase);
+
 // ✅ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
@@ -13,7 +14,7 @@ const firebaseConfig = {
 // ✅ Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.database(); // ✅ Added this to fix database errors
+const db = firebase.database();
 
 // ✅ Admin Login
 document.addEventListener("DOMContentLoaded", function () {
@@ -26,17 +27,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-       auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-        console.log("✅ Login Success:", userCredential);
-        document.getElementById("login-page").style.display = "none";
-        document.getElementById("admin-dashboard").style.display = "block";
-    })
-    .catch((error) => {
-        console.error("❌ Login Error:", error.message);
-        document.getElementById("login-error").innerText = "❌ " + error.message;
-        });
-
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                console.log("✅ Login Success:", userCredential);
+                document.getElementById("login-page").style.display = "none";
+                document.getElementById("admin-dashboard").style.display = "block";
+            })
+            .catch((error) => {
+                console.error("❌ Login Error:", error.message);
+                document.getElementById("login-error").innerText = "❌ " + error.message;
+            });
     });
 
     // ✅ Logout
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Load Pages on Click
     function loadPage(page) {
-        document.getElementById("content").innerHTML = `<iframe src="./${page}" width="100%" height="600px" style="border:none;"></iframe>`;
+        document.getElementById("content").innerHTML = `<iframe src="${page}" width="100%" height="600px" style="border:none;"></iframe>`;
     }
 
     document.getElementById("manage-players").addEventListener("click", function () {
@@ -71,4 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("settings").addEventListener("click", function () {
         loadPage("settings.html");
     });
+
+    // ✅ Debug Firebase
+    console.log("✅ Firebase Auth Loaded:", typeof firebase.auth);
+    console.log("✅ Firebase Database Loaded:", typeof firebase.database);
 });
