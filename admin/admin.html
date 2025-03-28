@@ -28,16 +28,33 @@
         </nav>
 
         <div id="content"></div>
+
+        <!-- 🔹 Ads Management Section -->
+        <div id="ads-management" style="display: none;">
+            <h2>Ads Management</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Ad Network</th>
+                        <th>Ad Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="ad-settings">
+                    <tr><td colspan="3">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- 🔹 Firebase SDK (Load First) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <!-- Admin Script -->
+    <!-- 🔹 Admin Scripts -->
     <script src="admin.js"></script>
-<script src="/admin/withdrawals.js" defer></script> <!-- ✅ Make sure this is AFTER Firebase -->
-
+    <script src="/admin/withdrawals.js" defer></script> 
+    <script src="/admin/ads.js" defer></script> <!-- ✅ Added Ads Script -->
 </body>
 </html>
