@@ -1,3 +1,4 @@
+console.log("✅ Firebase Script Loaded:", typeof firebase);
 // ✅ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
