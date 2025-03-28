@@ -7,9 +7,25 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <h2>Leaderboard Control</h2>
-    <div id="leaderboard-data">
-        <!-- Leaderboard data will be displayed here -->
-    </div>
+
+    <h2>🏆 Leaderboard Control</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player Name</th>
+                <th>Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard-list">
+            <!-- Leaderboard data will be loaded here -->
+        </tbody>
+    </table>
+
+    <button onclick="resetLeaderboard()">🔄 Reset Leaderboard</button>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="leaderboard.js"></script>
 </body>
 </html>
