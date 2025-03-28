@@ -8,8 +8,22 @@
 </head>
 <body>
     <h2>Manage Players</h2>
-    <div id="players-list">
-        <!-- Players data will be loaded here -->
-    </div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Player ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="players-list">
+            <!-- Player data will be inserted here -->
+        </tbody>
+    </table>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="players.js"></script>
 </body>
 </html>
