@@ -1,43 +1,39 @@
-// Initialize Firebase Database
+// ✅ Ensure Firebase is Initialized
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 
-// Load Leaderboard Data (Fixed)
+// ✅ Load Leaderboard Data
 function loadLeaderboard() {
     const leaderboardList = document.getElementById("leaderboard-list");
-    leaderboardList.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+    leaderboardList.innerHTML = "Loading...";
 
     db.ref("players").orderByChild("scores").once("value", (snapshot) => {
-        leaderboardList.innerHTML = ""; // Clear old data
+        leaderboardList.innerHTML = "";
         let rank = 1;
-
-        if (!snapshot.exists()) {
-            leaderboardList.innerHTML = "<tr><td colspan='4'>No players found.</td></tr>";
-            return;
-        }
 
         snapshot.forEach((childSnapshot) => {
             const playerData = childSnapshot.val();
             const playerId = childSnapshot.key;
 
-            if (playerData.name && playerData.scores !== undefined) {
-                let row = `
-                    <tr>
-                        <td>#${rank++}</td>
-                        <td>${playerData.name}</td>
-                        <td><input type="number" value="${playerData.scores}" id="score-${playerId}"></td>
-                        <td>
-                            <button onclick="updateScore('${playerId}')">✅ Update</button>
-                            <button onclick="removePlayer('${playerId}')">❌ Remove</button>
-                        </td>
-                    </tr>
-                `;
-                leaderboardList.innerHTML += row;
-            }
+            let row = `
+                <tr>
+                    <td>#${rank++}</td>
+                    <td>${playerData.name}</td>
+                    <td><input type="number" value="${playerData.scores}" id="score-${playerId}"></td>
+                    <td>
+                        <button onclick="updateScore('${playerId}')">✅ Update</button>
+                        <button onclick="removePlayer('${playerId}')">❌ Remove</button>
+                    </td>
+                </tr>
+            `;
+            leaderboardList.innerHTML += row;
         });
     });
 }
 
-// Update Score (Fixed)
+// ✅ Update Score
 function updateScore(playerId) {
     const newScore = document.getElementById(`score-${playerId}`).value;
     db.ref(`players/${playerId}`).update({ scores: parseInt(newScore) })
@@ -45,7 +41,7 @@ function updateScore(playerId) {
         .catch((error) => alert("❌ Error: " + error.message));
 }
 
-// Remove Player (Fixed)
+// ✅ Remove Player
 function removePlayer(playerId) {
     if (confirm("Are you sure you want to remove this player?")) {
         db.ref(`players/${playerId}`).remove()
@@ -57,7 +53,7 @@ function removePlayer(playerId) {
     }
 }
 
-// Reset Leaderboard
+// ✅ Reset Leaderboard
 function resetLeaderboard() {
     if (confirm("⚠ Are you sure you want to reset the leaderboard?")) {
         db.ref("players").remove()
@@ -66,5 +62,5 @@ function resetLeaderboard() {
     }
 }
 
-// Load leaderboard when page loads
+// ✅ Load leaderboard when page loads
 document.addEventListener("DOMContentLoaded", loadLeaderboard);
