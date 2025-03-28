@@ -1,52 +1,49 @@
-// Initialize Firebase
+// ✅ Initialize Firebase if not already initialized
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Load Ad Settings
-function loadAdSettings() {
+// ✅ Function to load ads settings from Firebase
+function loadAdsSettings() {
     const adSettingsTable = document.getElementById("ad-settings");
     adSettingsTable.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
 
     db.ref("ads").once("value", (snapshot) => {
         adSettingsTable.innerHTML = ""; // Clear loading message
+
         if (!snapshot.exists()) {
-            adSettingsTable.innerHTML = "<tr><td colspan='3'>No ad settings found</td></tr>";
+            adSettingsTable.innerHTML = "<tr><td colspan='3'>No ads configured</td></tr>";
             return;
         }
 
-        let adsData = snapshot.val();
-        Object.keys(adsData).forEach(network => {
-            Object.keys(adsData[network]).forEach(adType => {
-                const enabled = adsData[network][adType];
+        snapshot.forEach((network) => {
+            const networkName = network.key; // Example: adsterra, propeller
+
+            network.forEach((ad) => {
+                const adType = ad.key;
+                const status = ad.val() ? "✅ Enabled" : "❌ Disabled";
+
+                // Add row to table
                 const row = `
                     <tr>
-                        <td>${network}</td>
+                        <td>${networkName}</td>
                         <td>${adType}</td>
-                        <td>
-                            <button onclick="toggleAd('${network}', '${adType}', ${enabled})">
-                                ${enabled ? "✅ Enabled" : "❌ Disabled"}
-                            </button>
-                        </td>
+                        <td>${status}</td>
                     </tr>
                 `;
                 adSettingsTable.innerHTML += row;
             });
         });
+    }).catch(error => {
+        adSettingsTable.innerHTML = `<tr><td colspan='3'>Error: ${error.message}</td></tr>`;
+        console.error("Firebase error:", error);
     });
 }
 
-// Toggle Ad Status
-function toggleAd(network, adType, currentStatus) {
-    const newStatus = !currentStatus;
-    db.ref(`ads/${network}/${adType}`).set(newStatus)
-        .then(() => {
-            alert(`Updated ${adType} (${network}): ${newStatus ? "Enabled" : "Disabled"}`);
-            loadAdSettings(); // Refresh table
-        })
-        .catch(error => {
-            console.error("Update failed:", error);
-        });
-}
+// ✅ Ensure script runs when admin clicks "Ads Management"
+document.getElementById("manage-ads").addEventListener("click", () => {
+    document.getElementById("ads-management").style.display = "block";
+    loadAdsSettings();
+});
 
-// Load Ad Settings on Page Load
-document.addEventListener("DOMContentLoaded", loadAdSettings);
+// ✅ Ensure script loads on page load
+document.addEventListener("DOMContentLoaded", loadAdsSettings);
