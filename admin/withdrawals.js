@@ -2,56 +2,43 @@
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Load Withdrawal Requests
 function loadWithdrawals() {
   const withdrawalList = document.getElementById("withdrawal-list");
   withdrawalList.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
-  db.ref("withdraw_requests").orderByChild("timestamp").once("value", (snapshot) => {
-    withdrawalList.innerHTML = ""; // Clear loading message
-
-    console.log("✅ Firebase Data Snapshot:", snapshot.val()); // ✅ Check if data is received
-
+  // ✅ 1. CHANGE THIS PATH IF NEEDED (verify in Firebase Console)
+  db.ref("withdraw_requests").once("value", (snapshot) => {
+    console.log("Firebase Data:", snapshot.val()); // Debug
+    
+    withdrawalList.innerHTML = "";
+    
     if (!snapshot.exists()) {
-      withdrawalList.innerHTML = "<tr><td colspan='5'>No requests found</td></tr>";
+      withdrawalList.innerHTML = "<tr><td colspan='5'>No requests found. Add test data?</td></tr>";
       return;
     }
 
-    let requests = [];
+    // ✅ 2. HANDLE FIELD NAME VARIATIONS
     snapshot.forEach(child => {
-      console.log("📌 Child Data:", child.val()); // ✅ Check each request
-      requests.push({
-        id: child.key,
-        ...child.val() // Spread all data (playerName, amount, etc.)
-      });
-    });
-
-    // Sort by newest first
-    requests.sort((a, b) => b.timestamp - a.timestamp);
-
-    console.log("📊 Sorted Requests:", requests); // ✅ Check sorted data
-
-    // Render rows
-    requests.forEach(request => {
+      const data = child.val();
       const row = `
         <tr>
-          <td>${request.playerName || "Unknown"}</td>
-          <td>$${request.amount || 0}</td>
-          <td>${request.wallet || "N/A"}</td>
-          <td>${request.status || "pending"}</td>
+          <td>${data.playerName || data.username || "Unknown"}</td>
+          <td>$${data.amount || 0}</td>
+          <td>${data.wallet || data.paymentMethod || "N/A"}</td>
+          <td>${data.status || "pending"}</td>
           <td>
-            <button onclick="approveWithdrawal('${request.id}')">✅ Approve</button>
-            <button onclick="rejectWithdrawal('${request.id}')">❌ Reject</button>
+            <button onclick="approveWithdrawal('${child.key}')">✅ Approve</button>
+            <button onclick="rejectWithdrawal('${child.key}')">❌ Reject</button>
           </td>
         </tr>
       `;
       withdrawalList.innerHTML += row;
     });
   }).catch(error => {
-    withdrawalList.innerHTML = `<tr><td colspan='5'>Error: ${error.message}</td></tr>`;
-    console.error("❌ Firebase error:", error);
+    console.error("Firebase Error:", error);
+    withdrawalList.innerHTML = `<tr><td colspan='5'>Error loading data</td></tr>`;
   });
 }
 
-// Approve/Reject functions remain the same
-document.addEventListener("DOMContentLoaded", loadWithdrawals);
+// Load on startup
+window.addEventListener("DOMContentLoaded", loadWithdrawals);
