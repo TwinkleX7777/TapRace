@@ -27,34 +27,37 @@
             <button id="settings">Settings</button>
         </nav>
 
-        <div id="content"></div>
+        <!-- Content Area -->
+        <div id="content">
+            <!-- Existing sections will load here -->
 
-        <!-- 🔹 Ads Management Section -->
-        <div id="ads-management" style="display: none;">
-            <h2>Ads Management</h2>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Ad Network</th>
-                        <th>Ad Type</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="ad-settings">
-                    <tr><td colspan="3">Loading...</td></tr>
-                </tbody>
-            </table>
+            <!-- 🔹 Ads Management Section -->
+            <div id="ads-management" style="display: none;">
+                <h2>Ads Management</h2>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Ad Network</th>
+                            <th>Ad Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ad-settings">
+                        <!-- Data will load here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- 🔹 Firebase SDK (Load First) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <!-- 🔹 Admin Scripts -->
+    <!-- Admin Scripts -->
     <script src="admin.js"></script>
-    <script src="/admin/withdrawals.js" defer></script> 
-    <script src="/admin/ads.js" defer></script> <!-- ✅ Added Ads Script -->
+    <script src="withdrawals.js"></script> <!-- Fixed path -->
+    <script src="ads.js"></script> <!-- Fixed path -->
 </body>
 </html>
