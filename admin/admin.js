@@ -26,16 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        auth.signInWithEmailAndPassword(email, password)
-            .then(() => {
-                console.log("✅ Login successful!");
-                document.getElementById("login-page").style.display = "none";
-                document.getElementById("admin-dashboard").style.display = "block";
-            })
-            .catch((error) => {
-                console.error("Login Error:", error.message);
-                document.getElementById("login-error").innerText = "❌ Invalid email or password!";
-            });
+       auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+        console.log("✅ Login Success:", userCredential);
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("admin-dashboard").style.display = "block";
+    })
+    .catch((error) => {
+        console.error("❌ Login Error:", error.message);
+        document.getElementById("login-error").innerText = "❌ " + error.message;
+        });
+
     });
 
     // ✅ Logout
