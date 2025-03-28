@@ -12,6 +12,7 @@ const firebaseConfig = {
 // ✅ Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.database(); // ✅ Added this to fix database errors
 
 // ✅ Admin Login
 document.addEventListener("DOMContentLoaded", function () {
