@@ -44,9 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // ✅ Load Pages on Click
+    // ✅ Fix Page Loading (iframe path corrected)
     function loadPage(page) {
-        document.getElementById("content").innerHTML = `<iframe src="./admin/${page}" width="100%" height="600px" style="border:none;"></iframe>`;
+        document.getElementById("content").innerHTML = `<iframe src="${page}" width="100%" height="600px" style="border:none;"></iframe>`;
     }
 
     document.getElementById("manage-players").addEventListener("click", function () {
