@@ -1,44 +1,66 @@
+// Firebase config (DO NOT CHANGE)
+const firebaseConfig = {
+  apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+  authDomain: "taprace-63f8e.firebaseapp.com",
+  databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
+  projectId: "taprace-63f8e",
+  storageBucket: "taprace-63f8e.appspot.com",
+  messagingSenderId: "93332718324",
+  appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+};
+
 // Initialize Firebase
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// Load Withdrawals
 function loadWithdrawals() {
-  const withdrawalList = document.getElementById("withdrawal-list");
-  withdrawalList.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+  const list = document.getElementById("withdrawal-list");
+  list.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
-  // ✅ 1. CHANGE THIS PATH IF NEEDED (verify in Firebase Console)
   db.ref("withdraw_requests").once("value", (snapshot) => {
-    console.log("Firebase Data:", snapshot.val()); // Debug
-    
-    withdrawalList.innerHTML = "";
+    list.innerHTML = "";
     
     if (!snapshot.exists()) {
-      withdrawalList.innerHTML = "<tr><td colspan='5'>No requests found. Add test data?</td></tr>";
+      list.innerHTML = "<tr><td colspan='5'>No pending requests</td></tr>";
       return;
     }
 
-    // ✅ 2. HANDLE FIELD NAME VARIATIONS
+    let html = '';
     snapshot.forEach(child => {
       const data = child.val();
-      const row = `
+      html += `
         <tr>
-          <td>${data.playerName || data.username || "Unknown"}</td>
-          <td>$${data.amount || 0}</td>
-          <td>${data.wallet || data.paymentMethod || "N/A"}</td>
-          <td>${data.status || "pending"}</td>
+          <td>${data.playerName || "Unknown"}</td>
+          <td>$${data.amount}</td>
+          <td>${data.paymentMethod}</td>
+          <td>${data.status}</td>
           <td>
-            <button onclick="approveWithdrawal('${child.key}')">✅ Approve</button>
-            <button onclick="rejectWithdrawal('${child.key}')">❌ Reject</button>
+            <button onclick="approve('${child.key}')">✅ Approve</button>
+            <button onclick="reject('${child.key}')">❌ Reject</button>
           </td>
         </tr>
       `;
-      withdrawalList.innerHTML += row;
     });
-  }).catch(error => {
-    console.error("Firebase Error:", error);
-    withdrawalList.innerHTML = `<tr><td colspan='5'>Error loading data</td></tr>`;
+    list.innerHTML = html;
   });
 }
 
-// Load on startup
+// Approve
+function approve(id) {
+  if (confirm("Approve this request?")) {
+    db.ref(`withdraw_requests/${id}`).update({ status: "approved" });
+    loadWithdrawals();
+  }
+}
+
+// Reject
+function reject(id) {
+  if (confirm("Reject this request?")) {
+    db.ref(`withdraw_requests/${id}`).update({ status: "rejected" });
+    loadWithdrawals();
+  }
+}
+
+// Start
 window.addEventListener("DOMContentLoaded", loadWithdrawals);
