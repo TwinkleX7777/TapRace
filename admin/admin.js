@@ -106,6 +106,9 @@ try {
         document.getElementById("manage-withdrawals").addEventListener("click", () => loadPage("withdrawals.html"));
         document.getElementById("manage-ads").addEventListener("click", () => loadPage("ads.html"));
         document.getElementById("settings").addEventListener("click", () => loadPage("settings.html"));
+document.getElementById("manage-withdrawals").addEventListener("click", function () {
+    loadPage("withdrawals.html");
+});
     }
 
 } catch (error) {
