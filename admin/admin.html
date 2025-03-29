@@ -4,42 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <style>
-        /* Basic styling - can move to admin.css later */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        #login-page, #admin-dashboard {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        input, button {
-            padding: 8px;
-            margin: 5px 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        nav button {
-            padding: 8px 15px;
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <!-- Login Section -->
     <div id="login-page">
         <h2>Admin Login</h2>
         <input type="email" id="email" placeholder="Enter Email">
@@ -48,59 +15,8 @@
         <p id="login-error" style="color: red;"></p>
     </div>
 
-    <!-- Admin Dashboard -->
     <div id="admin-dashboard" style="display: none;">
-        <h1>Admin Panel</h1>
-        <button id="logout-btn">Logout</button>
-
-        <!-- Navigation -->
-        <nav>
-            <button id="manage-players">Manage Players</button>
-            <button id="manage-leaderboard">Leaderboard Control</button>
-            <button id="manage-withdrawals">Withdraw Requests</button>
-            <button id="manage-ads">Ads Management</button>
-            <button id="settings">Settings</button>
-        </nav>
-
-        <!-- Content Area -->
-        <div id="content">
-            <!-- Players Section -->
-            <div id="players-management" style="display: none;">
-                <!-- Will be loaded by players.js -->
-            </div>
-
-            <!-- Leaderboard Section -->
-            <div id="leaderboard-management" style="display: none;">
-                <!-- Will be loaded by leaderboard.js -->
-            </div>
-
-            <!-- Withdrawals Section -->
-            <div id="withdrawals-management" style="display: none;">
-                <!-- Will be loaded by withdrawals.js -->
-            </div>
-
-            <!-- Ads Management Section -->
-            <div id="ads-management" style="display: none;">
-                <h2>Ads Management</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ad Network</th>
-                            <th>Ad Type</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ad-settings">
-                        <!-- Will be loaded by ads.js -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Settings Section -->
-            <div id="settings-management" style="display: none;">
-                <!-- Will be loaded by settings.js -->
-            </div>
-        </div>
+        <!-- Keep existing dashboard content -->
     </div>
 
     <!-- Firebase SDK -->
@@ -108,9 +24,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <!-- Admin Scripts -->
+    <!-- Add this script BEFORE admin.js -->
     <script>
-        // Firebase Configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
             authDomain: "taprace-63f8e.firebaseapp.com",
@@ -122,52 +38,14 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
     </script>
-    
+
+    <!-- Admin Scripts -->
     <script src="admin.js"></script>
-    <script src="players.js"></script>
-    <script src="leaderboard.js"></script>
     <script src="withdrawals.js"></script>
     <script src="ads.js"></script>
-    <script src="settings.js"></script>
-
-    <!-- Section Switching Logic -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Hide all content sections
-            function hideAllSections() {
-                document.querySelectorAll('#content > div').forEach(div => {
-                    div.style.display = 'none';
-                });
-            }
-
-            // Set up button listeners
-            document.getElementById('manage-players').addEventListener('click', function() {
-                hideAllSections();
-                document.getElementById('players-management').style.display = 'block';
-            });
-
-            document.getElementById('manage-leaderboard').addEventListener('click', function() {
-                hideAllSections();
-                document.getElementById('leaderboard-management').style.display = 'block';
-            });
-
-            document.getElementById('manage-withdrawals').addEventListener('click', function() {
-                hideAllSections();
-                document.getElementById('withdrawals-management').style.display = 'block';
-            });
-
-            document.getElementById('manage-ads').addEventListener('click', function() {
-                hideAllSections();
-                document.getElementById('ads-management').style.display = 'block';
-            });
-
-            document.getElementById('settings').addEventListener('click', function() {
-                hideAllSections();
-                document.getElementById('settings-management').style.display = 'block';
-            });
-        });
-    </script>
 </body>
 </html>
