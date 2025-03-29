@@ -1,59 +1,25 @@
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
-    authDomain: "taprace-63f8e.firebaseapp.com",
-    databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
-    projectId: "taprace-63f8e",
-    storageBucket: "taprace-63f8e.appspot.com",
-    messagingSenderId: "93332718324",
-    appId: "1:93332718324:web:4b48350c0b64061eb794a1"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-
-// Fetch and display players
+// players.js
 function loadPlayers() {
-    const playersList = document.getElementById("players-list");
-    playersList.innerHTML = "<tr><td colspan='5'>Loading players...</td></tr>";
+    const content = document.getElementById('players-management');
+    content.innerHTML = '<p>Loading players...</p>';
 
-    database.ref("players").once("value", (snapshot) => {
-        playersList.innerHTML = ""; // Clear the loading message
+    firebase.database().ref('players').once('value').then(snapshot => {
+        let html = '<h2>Players List</h2><table border="1" style="width:100%">';
+        html += '<tr><th>ID</th><th>Name</th><th>Score</th></tr>';
 
-        snapshot.forEach((childSnapshot) => {
-            const player = childSnapshot.val();
-            const playerId = childSnapshot.key;
-
-            const row = `
+        snapshot.forEach(player => {
+            const data = player.val();
+            html += `
                 <tr>
-                    <td>${playerId}</td>
-                    <td>${player.username || "N/A"}</td>
-                    <td>${player.email || "N/A"}</td>
-                    <td>${player.score || 0}</td>
-                    <td>
-                        <button onclick="deletePlayer('${playerId}')">❌ Delete</button>
-                    </td>
+                    <td>${player.key}</td>
+                    <td>${data.name || 'Anonymous'}</td>
+                    <td>${data.score || 0}</td>
                 </tr>
             `;
-            playersList.innerHTML += row;
         });
+
+        content.innerHTML = html + '</table>';
     });
 }
 
-// Delete Player
-function deletePlayer(playerId) {
-    if (confirm("Are you sure you want to delete this player?")) {
-        database.ref("players/" + playerId).remove()
-            .then(() => {
-                alert("Player deleted successfully!");
-                loadPlayers(); // Refresh the list
-            })
-            .catch((error) => {
-                alert("Error deleting player: " + error.message);
-            });
-    }
-}
-
-// Load players when the page opens
-document.addEventListener("DOMContentLoaded", loadPlayers);
+document.getElementById('manage-players').addEventListener('click', loadPlayers);
