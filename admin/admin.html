@@ -4,29 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="admin.css">
+    <style>
+        /* Basic styling */
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; }
+        input, button { padding: 8px; margin: 5px; width: 200px; }
+        #login-page { text-align: center; }
+        #admin-dashboard { display: none; }
+    </style>
 </head>
 <body>
     <div id="login-page">
         <h2>Admin Login</h2>
-        <input type="email" id="email" placeholder="Enter Email">
-        <input type="password" id="password" placeholder="Enter Password">
+        <input type="email" id="email" placeholder="Enter Email" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
         <button id="login-btn">Login</button>
         <p id="login-error" style="color: red;"></p>
     </div>
 
-    <div id="admin-dashboard" style="display: none;">
-        <!-- Keep existing dashboard content -->
+    <div id="admin-dashboard">
+        <h1>Admin Panel</h1>
+        <button id="logout-btn">Logout</button>
+        <nav>
+            <!-- Keep your navigation buttons -->
+        </nav>
+        <div id="content">
+            <!-- Content sections -->
+        </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <!-- Add this script BEFORE admin.js -->
+    <!-- Firebase Configuration -->
     <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
             authDomain: "taprace-63f8e.firebaseapp.com",
@@ -36,14 +48,47 @@
             messagingSenderId: "93332718324",
             appId: "1:93332718324:web:4b48350c0b64061eb794a1"
         };
-
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
     </script>
 
-    <!-- Admin Scripts -->
+    <!-- Authentication Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const auth = firebase.auth();
+            
+            // Login Handler
+            document.getElementById('login-btn').addEventListener('click', async () => {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const errorElement = document.getElementById('login-error');
+                
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    document.getElementById('login-page').style.display = 'none';
+                    document.getElementById('admin-dashboard').style.display = 'block';
+                } catch (error) {
+                    errorElement.textContent = error.message;
+                }
+            });
+
+            // Logout Handler
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                auth.signOut();
+                document.getElementById('admin-dashboard').style.display = 'none';
+                document.getElementById('login-page').style.display = 'block';
+            });
+
+            // Auth State Listener
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    document.getElementById('login-page').style.display = 'none';
+                    document.getElementById('admin-dashboard').style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+    <!-- Other Scripts -->
     <script src="admin.js"></script>
     <script src="withdrawals.js"></script>
     <script src="ads.js"></script>
