@@ -6,13 +6,42 @@
     <title>Admin Panel</title>
     <style>
         /* Basic styling */
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; }
-        input, button { padding: 8px; margin: 5px; width: 200px; }
-        #login-page { text-align: center; }
-        #admin-dashboard { display: none; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 20px auto;
+            padding: 20px;
+        }
+        #login-page { 
+            text-align: center; 
+            margin-top: 50px;
+        }
+        #admin-dashboard { 
+            display: none; 
+        }
+        input, button { 
+            padding: 8px; 
+            margin: 5px; 
+            width: 200px; 
+        }
+        nav {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+        nav button {
+            margin-right: 10px;
+            padding: 8px 15px;
+        }
+        #content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            min-height: 300px;
+        }
     </style>
 </head>
 <body>
+    <!-- Login Section -->
     <div id="login-page">
         <h2>Admin Login</h2>
         <input type="email" id="email" placeholder="Enter Email" required>
@@ -21,18 +50,66 @@
         <p id="login-error" style="color: red;"></p>
     </div>
 
+    <!-- Admin Dashboard -->
     <div id="admin-dashboard">
         <h1>Admin Panel</h1>
         <button id="logout-btn">Logout</button>
+
+        <!-- Navigation -->
         <nav>
-            <!-- Keep your navigation buttons -->
+            <button id="manage-players">Manage Players</button>
+            <button id="manage-leaderboard">Leaderboard Control</button>
+            <button id="manage-withdrawals">Withdraw Requests</button>
+            <button id="manage-ads">Ads Management</button>
+            <button id="settings">Settings</button>
         </nav>
+
+        <!-- Content Area -->
         <div id="content">
-            <!-- Content sections -->
+            <!-- Players Section -->
+            <div id="players-management" style="display: none;">
+                <h2>Players Management</h2>
+                <p>Player list will appear here</p>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div id="leaderboard-management" style="display: none;">
+                <h2>Leaderboard Control</h2>
+                <p>Leaderboard controls will appear here</p>
+            </div>
+
+            <!-- Withdrawals Section -->
+            <div id="withdrawals-management" style="display: none;">
+                <h2>Withdraw Requests</h2>
+                <p>Withdrawal requests will appear here</p>
+            </div>
+
+            <!-- Ads Management Section -->
+            <div id="ads-management" style="display: none;">
+                <h2>Ads Management</h2>
+                <table border="1" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>Ad Network</th>
+                            <th>Ad Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ad-settings">
+                        <tr><td colspan="3">Loading ads data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-management" style="display: none;">
+                <h2>Settings</h2>
+                <p>Settings will appear here</p>
+            </div>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -51,7 +128,7 @@
         const app = firebase.initializeApp(firebaseConfig);
     </script>
 
-    <!-- Authentication Script -->
+    <!-- Main Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const auth = firebase.auth();
@@ -64,8 +141,6 @@
                 
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
-                    document.getElementById('login-page').style.display = 'none';
-                    document.getElementById('admin-dashboard').style.display = 'block';
                 } catch (error) {
                     errorElement.textContent = error.message;
                 }
@@ -74,8 +149,6 @@
             // Logout Handler
             document.getElementById('logout-btn').addEventListener('click', () => {
                 auth.signOut();
-                document.getElementById('admin-dashboard').style.display = 'none';
-                document.getElementById('login-page').style.display = 'block';
             });
 
             // Auth State Listener
@@ -83,12 +156,34 @@
                 if (user) {
                     document.getElementById('login-page').style.display = 'none';
                     document.getElementById('admin-dashboard').style.display = 'block';
+                    // Show default section
+                    showSection('ads-management');
+                } else {
+                    document.getElementById('admin-dashboard').style.display = 'none';
+                    document.getElementById('login-page').style.display = 'block';
                 }
             });
+
+            // Section Navigation
+            function showSection(sectionId) {
+                // Hide all sections
+                document.querySelectorAll('#content > div').forEach(div => {
+                    div.style.display = 'none';
+                });
+                // Show selected section
+                document.getElementById(sectionId).style.display = 'block';
+            }
+
+            // Set up section buttons
+            document.getElementById('manage-players').addEventListener('click', () => showSection('players-management'));
+            document.getElementById('manage-leaderboard').addEventListener('click', () => showSection('leaderboard-management'));
+            document.getElementById('manage-withdrawals').addEventListener('click', () => showSection('withdrawals-management'));
+            document.getElementById('manage-ads').addEventListener('click', () => showSection('ads-management'));
+            document.getElementById('settings').addEventListener('click', () => showSection('settings-management'));
         });
     </script>
 
-    <!-- Other Scripts -->
+    <!-- Load other scripts -->
     <script src="admin.js"></script>
     <script src="withdrawals.js"></script>
     <script src="ads.js"></script>
