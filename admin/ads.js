@@ -1,53 +1,42 @@
+// ads.js
+const firebaseConfig = {
+    apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+    authDomain: "taprace-63f8e.firebaseapp.com",
+    databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
+    projectId: "taprace-63f8e",
+    storageBucket: "taprace-63f8e.appspot.com",
+    messagingSenderId: "93332718324",
+    appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+};
+
 // Initialize Firebase
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function loadAdsSettings() {
-    const adSettingsTable = document.getElementById("ad-settings");
-    adSettingsTable.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
+// Simple Ads Loader
+document.getElementById('manage-ads').addEventListener('click', () => {
+    // Show ads section
+    document.getElementById('ads-management').style.display = 'block';
+    
+    // Basic loading message
+    document.getElementById('ad-settings').innerHTML = 
+        '<tr><td colspan="3">Loading ads settings...</td></tr>';
 
-    db.ref("ads").once("value", (snapshot) => {
-        adSettingsTable.innerHTML = "";
-        
-        if (!snapshot.exists()) {
-            adSettingsTable.innerHTML = "<tr><td colspan='3'>No ads configured</td></tr>";
-            return;
-        }
-
+    // Load data
+    db.ref("ads").once('value', (snapshot) => {
         let html = '';
-        snapshot.forEach((networkSnapshot) => {
-            const networkName = networkSnapshot.key;
-            const networkData = networkSnapshot.val();
-
-            // ✅ Process object data correctly
-            Object.entries(networkData).forEach(([adType, isEnabled]) => {
+        snapshot.forEach((network) => {
+            const networkName = network.key;
+            Object.entries(network.val()).forEach(([adType, status]) => {
                 html += `
                     <tr>
                         <td>${networkName}</td>
-                        <td>${adType.replace(/_/g, ' ')}</td>
-                        <td>${isEnabled ? "✅ Enabled" : "❌ Disabled"}</td>
+                        <td>${adType}</td>
+                        <td>${status ? '✅ Active' : '❌ Disabled'}</td>
                     </tr>
                 `;
             });
         });
-
-        adSettingsTable.innerHTML = html || "<tr><td colspan='3'>No ads found</td></tr>";
-    }).catch(error => {
-        adSettingsTable.innerHTML = `<tr><td colspan='3'>Error: ${error.message}</td></tr>`;
-        console.error("Firebase error:", error);
+        document.getElementById('ad-settings').innerHTML = html;
     });
-}
-
-// ✅ Show ads panel when clicking "Ads Management" button
-document.getElementById("manage-ads").addEventListener("click", () => {
-    document.getElementById("ads-management").style.display = "block";
-    loadAdsSettings();
-});
-
-// Initial load (optional)
-document.addEventListener("DOMContentLoaded", () => {
-    // Only load if ads panel is visible by default
-    if (document.getElementById("ads-management").style.display === "block") {
-        loadAdsSettings();
-    }
 });
