@@ -28,7 +28,7 @@
         </nav>
 
         <div id="content">
-            <!-- Default Content -->
+            <!-- Players Section -->
             <div id="players" style="display: none;">
                 <h2>Players Management</h2>
                 <table>
@@ -44,6 +44,37 @@
                 </table>
             </div>
 
+            <!-- Leaderboard Section -->
+            <div id="leaderboard" style="display: none;">
+                <h2>Leaderboard</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-list"></tbody>
+                </table>
+            </div>
+
+            <!-- Withdrawals Section -->
+            <div id="withdrawals" style="display: none;">
+                <h2>Withdraw Requests</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawals-list"></tbody>
+                </table>
+            </div>
+
             <!-- Ads Management Section -->
             <div id="ads" style="display: none;">
                 <h2>Ads Management</h2>
@@ -56,10 +87,24 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="ad-settings">
-                        <tr><td colspan="4">Loading ads data...</td></tr>
-                    </tbody>
+                    <tbody id="ad-settings"></tbody>
                 </table>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" style="display: none;">
+                <h2>System Settings</h2>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>Max Daily Taps:</label>
+                        <input type="number" id="max-taps" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Withdrawal:</label>
+                        <input type="number" id="min-withdrawal" class="form-input">
+                    </div>
+                    <button onclick="saveSettings()">Save Settings</button>
+                </div>
             </div>
         </div>
     </div>
@@ -69,90 +114,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
-            authDomain: "taprace-63f8e.firebaseapp.com",
-            databaseURL: "https://taprace-taffe-default-rtdb.firebaseio.com",
-            projectId: "taprace-63f8e",
-            storageBucket: "taprace-63f8e.appspot.com",
-            messagingSenderId: "93332718324",
-            appId: "1:93332718324:web:4b48350c0b64061eb794a1"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-
-        // Auth State Listener
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('admin-dashboard').style.display = 'block';
-                loadPlayers();
-            } else {
-                document.getElementById('admin-dashboard').style.display = 'none';
-                document.getElementById('login-page').style.display = 'block';
-            }
-        });
-
-        // Login Handler
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .catch(error => {
-                    document.getElementById('login-error').textContent = error.message;
-                });
-        });
-
-        // Logout Handler
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            auth.signOut();
-        });
-
-        // Navigation
-        document.querySelectorAll('nav button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const sectionId = this.dataset.section;
-                document.querySelectorAll('#content > div').forEach(div => {
-                    div.style.display = 'none';
-                });
-                document.getElementById(sectionId).style.display = 'block';
-            });
-        });
-
-        // Load Players
-        async function loadPlayers() {
-            const snapshot = await db.ref('players').get();
-            const players = snapshot.val();
-            const tbody = document.getElementById('players-list');
-            tbody.innerHTML = '';
-            
-            for(const [playerId, playerData] of Object.entries(players)) {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${playerId}</td>
-                        <td>${playerData.username || 'N/A'}</td>
-                        <td>${playerData.score || 0}</td>
-                        <td>
-                            <button onclick="deletePlayer('${playerId}')">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        // Delete Player
-        async function deletePlayer(playerId) {
-            if(confirm('Delete this player?')) {
-                await db.ref(`players/${playerId}`).remove();
-                loadPlayers();
-            }
-        }
-    </script>
+    <script src="admin.js"></script>
 </body>
 </html>
