@@ -3,108 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="admin.css">
-    <title>Admin Panel</title>
+    <title>TapRace Admin</title>
+    <style>
+        :root {
+            --primary: #1a1c2c;
+            --secondary: #41a6f6;
+            --danger: #ff5252;
+            --success: #4CAF50;
+            --background: #0f0f1f;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary);
+            padding: 20px;
+            border-right: 2px solid var(--secondary);
+        }
+
+        .nav-item {
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .content-section {
+            padding: 2rem;
+            display: none;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: left;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
 </head>
 <body>
-    <!-- Login Page -->
-    <div id="login-page" class="login-container">
-        <div class="login-card">
-            <h2>Admin Login</h2>
-            <input type="email" id="email" placeholder="Admin Email">
-            <input type="password" id="password" placeholder="Password">
-            <button id="login-btn" class="btn">Login</button>
-            <p id="login-error" class="error-msg"></p>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>TapRace Admin</h2>
+            <div class="nav-item" onclick="showSection('ads-control')">Ads Control</div>
+            <div class="nav-item" onclick="showSection('players')">Players</div>
+            <div class="nav-item" onclick="showSection('withdrawals')">Withdrawals</div>
+            <div class="nav-item" onclick="showSection('settings')">Settings</div>
         </div>
-    </div>
 
-    <!-- Admin Dashboard (Hidden by default) -->
-    <div id="admin-dashboard" style="display: none;">
-        <button id="logout-btn" class="logout-btn">Logout</button>
-        <h1>Players Management</h1>
-        
-        <!-- Content Sections -->
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Player ID</th>
-                        <th>Name</th>
-                        <th>Score</th>
-                        <th>Last Active</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>-OMleF49AEvYHwiAbpMB</td>
-                        <td>Khan</td>
-                        <td>0</td>
-                        <td>Invalid Date</td>
-                        <td>
-                            <button class="btn delete-btn" onclick="deletePlayer(this)">Delete</button>
-                        </td>
-                    </tr>
-                    <!-- Add more rows -->
-                </tbody>
-            </table>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Ads Control -->
+            <div id="ads-control" class="content-section active-section">
+                <h2>Ad Networks Control</h2>
+                <div id="adsterra-control"></div>
+                <div id="prmelier-control"></div>
+            </div>
+
+            <!-- Players Management -->
+            <div id="players" class="content-section">
+                <h2>Players Management</h2>
+                <table class="data-table" id="players-table">
+                    <thead>
+                        <tr>
+                            <th>Player ID</th>
+                            <th>Username</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Withdraw Requests -->
+            <div id="withdrawals" class="content-section">
+                <h2>Withdrawal Requests</h2>
+                <table class="data-table" id="withdrawals-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Amount</th>
+                            <th>Wallet</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Settings -->
+            <div id="settings" class="content-section">
+                <h2>System Settings</h2>
+                <div class="settings-grid" id="settings-form"></div>
+            </div>
         </div>
     </div>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
-    <!-- Main Script -->
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
             authDomain: "taprace-63f8e.firebaseapp.com",
+            databaseURL: "https://taprace-taffe-default-rtdb.firebaseio.com",
             projectId: "taprace-63f8e",
             storageBucket: "taprace-63f8e.appspot.com",
             messagingSenderId: "93332718324",
             appId: "1:93332718324:web:4b48350c0b64061eb794a1"
         };
         
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
         const auth = firebase.auth();
 
-        // Auth State Listener
+        // Authentication Check
         auth.onAuthStateChanged(user => {
-            if (user) {
-                // User is logged in
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('admin-dashboard').style.display = 'block';
-            } else {
-                // User is logged out
-                document.getElementById('admin-dashboard').style.display = 'none';
-                document.getElementById('login-page').style.display = 'flex';
-            }
+            if (!user) window.location.href = '/admin-login.html';
         });
 
-        // Login Handler
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .catch(error => {
-                    document.getElementById('login-error').textContent = error.message;
-                });
-        });
-
-        // Logout Handler
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            auth.signOut();
-        });
-
-        // Delete Player Function
-        function deletePlayer(btn) {
-            const row = btn.closest('tr');
-            row.remove();
+        // Ads Control
+        function loadAdControls() {
+            const adRef = db.ref('ads');
+            adRef.on('value', (snapshot) => {
+                const adsData = snapshot.val();
+                renderAdControls('adsterra-control', adsData.adsterra);
+                renderAdControls('prmelier-control', adsData.prmelier);
+            });
         }
+
+        function renderAdControls(containerId, adConfig) {
+            const container = document.getElementById(containerId);
+            let html = '<h3>' + containerId.replace('-control', '').toUpperCase() + '</h3>';
+            
+            for(const [key, value] of Object.entries(adConfig)) {
+                html += `
+                    <div class="ad-control-item">
+                        <label>${key}:</label>
+                        <label class="switch">
+                            <input type="checkbox" ${value ? 'checked' : ''} 
+                                   onchange="updateAdSetting('${containerId.replace('-control', '')}', '${key}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function updateAdSetting(network, key, value) {
+            db.ref(`ads/${network}/${key}`).set(value);
+        }
+
+        // Players Management
+        function loadPlayers() {
+            const playersRef = db.ref('players');
+            playersRef.on('value', (snapshot) => {
+                const players = snapshot.val();
+                const tbody = document.querySelector('#players-table tbody');
+                tbody.innerHTML = '';
+                
+                for(const [playerId, playerData] of Object.entries(players)) {
+                    const row = `
+                        <tr>
+                            <td>${playerId}</td>
+                            <td>${playerData.username || 'N/A'}</td>
+                            <td>${playerData.score || 0}</td>
+                            <td>
+                                <button onclick="banPlayer('${playerId}')">Ban</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        function banPlayer(playerId) {
+            if(confirm('Are you sure you want to ban this player?')) {
+                db.ref(`players/${playerId}`).remove();
+            }
+        }
+
+        // Withdrawal Requests
+        function loadWithdrawals() {
+            const withdrawalsRef = db.ref('withdraw_requests');
+            withdrawalsRef.on('value', (snapshot) => {
+                const requests = snapshot.val();
+                const tbody = document.querySelector('#withdrawals-table tbody');
+                tbody.innerHTML = '';
+                
+                for(const [requestId, requestData] of Object.entries(requests)) {
+                    const row = `
+                        <tr>
+                            <td>${requestData.playerName}</td>
+                            <td>${requestData.amount}</td>
+                            <td>${requestData.wallet}</td>
+                            <td>${requestData.status}</td>
+                            <td>
+                                ${requestData.status === 'pending' ? `
+                                    <button onclick="approveWithdrawal('${requestId}')">Approve</button>
+                                    <button onclick="rejectWithdrawal('${requestId}')">Reject</button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        function approveWithdrawal(requestId) {
+            db.ref(`withdraw_requests/${requestId}/status`).set('approved');
+        }
+
+        function rejectWithdrawal(requestId) {
+            db.ref(`withdraw_requests/${requestId}/status`).set('rejected');
+        }
+
+        // Settings Management
+        function loadSettings() {
+            const settingsRef = db.ref('settings');
+            settingsRef.on('value', (snapshot) => {
+                const settings = snapshot.val();
+                const form = document.getElementById('settings-form');
+                let html = '';
+                
+                for(const [key, value] of Object.entries(settings)) {
+                    html += `
+                        <div class="setting-item">
+                            <label>${key.replace(/_/g, ' ').toUpperCase()}:</label>
+                            <input type="${typeof value === 'boolean' ? 'checkbox' : 'number'}" 
+                                   ${typeof value === 'boolean' ? (value ? 'checked' : '') : `value="${value}"`}
+                                   onchange="updateSetting('${key}', this.${typeof value === 'boolean' ? 'checked' : 'value'})">
+                        </div>
+                    `;
+                }
+                form.innerHTML = html;
+            });
+        }
+
+        function updateSetting(key, value) {
+            db.ref(`settings/${key}`).set(typeof value === 'string' ? Number(value) : value);
+        }
+
+        // UI Functions
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active-section');
+            });
+            document.getElementById(sectionId).classList.add('active-section');
+            
+            // Load data when section is shown
+            switch(sectionId) {
+                case 'ads-control': loadAdControls(); break;
+                case 'players': loadPlayers(); break;
+                case 'withdrawals': loadWithdrawals(); break;
+                case 'settings': loadSettings(); break;
+            }
+        }
+
+        // Initialize
+        showSection('ads-control');
     </script>
 </body>
 </html>
