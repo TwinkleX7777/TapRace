@@ -4,30 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div id="login-page">
-        <h2>Admin Login</h2>
-        <input type="email" id="email" placeholder="Enter Email">
-        <input type="password" id="password" placeholder="Enter Password">
-        <button id="login-btn">Login</button>
-        <p id="login-error" style="color: red;"></p>
+<body class="bg-gray-100">
+    <!-- Login Page -->
+    <div id="login-page" class="h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96 text-center">
+            <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
+            <input type="email" id="email" placeholder="Enter Email" class="w-full p-2 border rounded mb-2">
+            <input type="password" id="password" placeholder="Enter Password" class="w-full p-2 border rounded mb-4">
+            <button id="login-btn" class="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-700">Login</button>
+            <p id="login-error" class="text-red-500 mt-2"></p>
+        </div>
     </div>
 
-    <div id="admin-dashboard" style="display: none;">
-        <h1>Admin Panel</h1>
-        <button id="logout-btn">Logout</button>
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-800 text-white p-5 space-y-4">
+            <h1 class="text-2xl font-bold">Admin Panel</h1>
+            <button id="logout-btn" class="w-full bg-red-500 py-2 rounded hover:bg-red-700">Logout</button>
+            <nav class="space-y-2">
+                <button id="manage-players" class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">Manage Players</button>
+                <button id="manage-leaderboard" class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">Leaderboard Control</button>
+                <button id="manage-withdrawals" class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">Withdraw Requests</button>
+                <button id="manage-ads" class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">Ads Management</button>
+                <button id="settings" class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">Settings</button>
+            </nav>
+        </div>
 
-        <nav>
-            <button id="manage-players">Manage Players</button>
-            <button id="manage-leaderboard">Leaderboard Control</button>
-            <button id="manage-withdrawals">Withdraw Requests</button>
-            <button id="manage-ads">Ads Management</button>
-            <button id="settings">Settings</button>
-        </nav>
-
-        <div id="content"></div>
+        <!-- Main Content -->
+        <div id="content" class="flex-1 p-5"></div>
     </div>
 
     <!-- Firebase SDK -->
@@ -37,7 +44,5 @@
 
     <!-- Admin Scripts -->
     <script src="admin.js"></script>
-    <script src="withdrawals.js" defer></script>
-    <script src="ads.js" defer></script>
 </body>
 </html>
