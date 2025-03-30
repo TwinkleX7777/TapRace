@@ -1,95 +1,91 @@
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --background: #f8f9fa;
-    --text-color: #2c3e50;
-    --danger-color: #e74c3c;
-    --border-color: #dee2e6;
-}
-
-.dark-theme {
-    --primary-color: #34495e;
-    --secondary-color: #2980b9;
-    --background: #2c3e50;
-    --text-color: #ecf0f1;
-    --danger-color: #c0392b;
-    --border-color: #34495e;
+    --primary: #2A2F4F;
+    --secondary: #917FB3;
+    --danger: #FF6B6B;
+    --background: #F7F7F7;
+    --card-bg: #FFFFFF;
+    --border: #E0E0E0;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background);
-    color: var(--text-color);
     margin: 0;
-    padding: 20px;
-    transition: all 0.3s ease;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--background);
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
+/* Login Page Styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-.theme-switch {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px 20px;
-    background: var(--secondary-color);
-    color: white;
-    border: none;
+.login-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid var(--border);
     border-radius: 5px;
-    cursor: pointer;
 }
 
-.section {
-    background: white;
+/* Admin Dashboard Styles */
+#admin-dashboard {
+    max-width: 1200px;
+    margin: 20px auto;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-top: 40px;
-}
-
-.table-container {
-    overflow-x: auto;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.data-table th,
-.data-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .data-table th {
-    background-color: var(--primary-color);
+    background: var(--primary);
     color: white;
+    padding: 15px;
+    text-align: left;
+}
+
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
 }
 
 .btn {
     padding: 8px 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     transition: opacity 0.3s;
 }
 
 .delete-btn {
-    background-color: var(--danger-color);
+    background: var(--danger);
     color: white;
 }
 
-.btn:hover {
-    opacity: 0.9;
+.logout-btn {
+    background: var(--primary);
+    color: white;
+    float: right;
+    margin-bottom: 20px;
 }
 
-.dark-theme .section {
-    background: var(--primary-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+.error-msg {
+    color: var(--danger);
+    margin-top: 10px;
 }
