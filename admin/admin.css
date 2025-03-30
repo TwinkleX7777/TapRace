@@ -1,131 +1,95 @@
 :root {
-    --primary: #2A2F4F;
-    --secondary: #917FB3;
-    --accent: #E5BEEC;
-    --success: #4CAF50;
-    --danger: #F44336;
-    --background: #F8F9FA;
-    --text: #2A2F4F;
-    --card-bg: #FFFFFF;
-    --border: #DEE2E6;
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --background: #f8f9fa;
+    --text-color: #2c3e50;
+    --danger-color: #e74c3c;
+    --border-color: #dee2e6;
 }
 
-/* Base Styles */
+.dark-theme {
+    --primary-color: #34495e;
+    --secondary-color: #2980b9;
+    --background: #2c3e50;
+    --text-color: #ecf0f1;
+    --danger-color: #c0392b;
+    --border-color: #34495e;
+}
+
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--background);
-    color: var(--text);
+    color: var(--text-color);
     margin: 0;
-    min-height: 100vh;
-}
-
-/* Login Section */
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-
-.login-card {
-    background: var(--card-bg);
-    padding: 2.5rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px;
-}
-
-/* Admin Dashboard */
-.admin-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.admin-nav {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--border);
-}
-
-/* Table Styling */
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--card-bg);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.data-table th {
-    background: var(--primary);
-    color: white;
-    padding: 1rem;
-    text-align: left;
-}
-
-.data-table td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
-/* Button Styles */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+    padding: 20px;
     transition: all 0.3s ease;
 }
 
-.login-btn {
-    background: var(--primary);
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.theme-switch {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: var(--secondary-color);
     color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 40px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
     width: 100%;
-    margin-top: 1rem;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-.nav-btn {
-    background: transparent;
-    color: var(--text);
-    border: 2px solid var(--border);
+.data-table th,
+.data-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.nav-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.danger-btn {
-    background: var(--danger);
+.data-table th {
+    background-color: var(--primary-color);
     color: white;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .admin-nav {
-        flex-wrap: wrap;
-    }
-    
-    .nav-btn {
-        flex: 1 1 45%;
-    }
-    
-    .data-table {
-        display: block;
-        overflow-x: auto;
-    }
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.dark-theme .section {
+    background: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
