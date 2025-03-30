@@ -1,55 +1,43 @@
-// players.js
-document.addEventListener("DOMContentLoaded", () => {
-    const db = firebase.database();
-    const playersContent = document.getElementById('players-management');
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    function loadPlayers() {
-        playersContent.innerHTML = '<p>Loading players...</p>';
-        
-        db.ref('players').orderByChild('score').limitToLast(100).once('value', snapshot => {
-            let html = `
-                <h2>Players Management</h2>
-                <table class="data-table">
-                    <tr>
-                        <th>Player ID</th>
-                        <th>Name</th>
-                        <th>Score</th>
-                        <th>Last Active</th>
-                        <th>Actions</th>
-                    </tr>
-            `;
+function loadPlayers() {
+    const playerList = document.getElementById("player-list");
+    playerList.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
 
-            if (snapshot.exists()) {
-                snapshot.forEach(child => {
-                    const player = child.val();
-                    html += `
-                        <tr>
-                            <td>${child.key}</td>
-                            <td>${player.name || 'Anonymous'}</td>
-                            <td>${player.score || 0}</td>
-                            <td>${new Date(player.lastActive).toLocaleString()}</td>
-                            <td>
-                                <button onclick="deletePlayer('${child.key}')" class="delete-btn">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } else {
-                html += `<tr><td colspan="5">No players found</td></tr>`;
-            }
+    db.ref("players").once("value", (snapshot) => {
+        playerList.innerHTML = ""; // Clear loading message
 
-            html += '</table>';
-            playersContent.innerHTML = html;
-        });
-    }
-
-    window.deletePlayer = (playerId) => {
-        if (confirm(`Delete player ${playerId} permanently?`)) {
-            db.ref(`players/${playerId}`).remove()
-                .then(() => loadPlayers())
-                .catch(error => alert('Delete failed: ' + error.message));
+        if (!snapshot.exists()) {
+            playerList.innerHTML = "<tr><td colspan='3'>No players found</td></tr>";
+            return;
         }
-    };
 
-    document.getElementById('manage-players').addEventListener('click', loadPlayers);
-});
+        snapshot.forEach((child) => {
+            const player = child.val();
+            const row = `
+                <tr>
+                    <td>${player.name || "Unknown"}</td>
+                    <td>${player.clicks || 0}</td>
+                    <td>
+                        <button onclick="resetClicks('${child.key}')">Reset Clicks</button>
+                    </td>
+                </tr>
+            `;
+            playerList.innerHTML += row;
+        });
+    }).catch(error => {
+        playerList.innerHTML = `<tr><td colspan='3'>Error: ${error.message}</td></tr>`;
+        console.error("Firebase error:", error);
+    });
+}
+
+// Function to reset clicks
+function resetClicks(playerId) {
+    db.ref(`players/${playerId}/clicks`).set(0)
+        .then(() => alert("Clicks reset successfully!"))
+        .catch(error => alert("Error: " + error.message));
+}
+
+// Load players on page load
+document.addEventListener("DOMContentLoaded", loadPlayers);
