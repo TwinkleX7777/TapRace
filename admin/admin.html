@@ -3,43 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="admin.css">
     <title>Admin Panel</title>
-    <style>
-        /* Basic styling */
-        body { 
-            font-family: Arial, sans-serif; 
-            max-width: 800px; 
-            margin: 20px auto;
-            padding: 20px;
-        }
-        #login-page { 
-            text-align: center; 
-            margin-top: 50px;
-        }
-        #admin-dashboard { 
-            display: none; 
-        }
-        input, button { 
-            padding: 8px; 
-            margin: 5px; 
-            width: 200px; 
-        }
-        nav {
-            margin: 20px 0;
-            padding: 10px;
-            background: #f5f5f5;
-        }
-        nav button {
-            margin-right: 10px;
-            padding: 8px 15px;
-        }
-        #content {
-            padding: 20px;
-            border: 1px solid #ddd;
-            min-height: 300px;
-        }
-    </style>
 </head>
 <body>
     <!-- Login Section -->
@@ -70,43 +35,64 @@
             <!-- Players Section -->
             <div id="players-management" style="display: none;">
                 <h2>Players Management</h2>
-                <p>Player list will appear here</p>
-            </div>
-
-            <!-- Leaderboard Section -->
-            <div id="leaderboard-management" style="display: none;">
-                <h2>Leaderboard Control</h2>
-                <p>Leaderboard controls will appear here</p>
-            </div>
-
-            <!-- Withdrawals Section -->
-            <div id="withdrawals-management" style="display: none;">
-                <h2>Withdraw Requests</h2>
-                <p>Withdrawal requests will appear here</p>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Player ID</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Last Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>- OMleFA9AEvYHwiAbpMB</td>
+                            <td>Khan</td>
+                            <td>0</td>
+                            <td>Invalid Date</td>
+                            <td>
+                                <div class="button-group">
+                                    <button class="btn btn-danger">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>-OMleFDi3-Yw9gMEzz9p</td>
+                            <td>abcdef</td>
+                            <td>0</td>
+                            <td>Invalid Date</td>
+                            <td>
+                                <div class="button-group">
+                                    <button class="btn btn-danger">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Ads Management Section -->
             <div id="ads-management" style="display: none;">
                 <h2>Ads Management</h2>
-                <table border="1" style="width: 100%">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Ad Network</th>
                             <th>Ad Type</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="ad-settings">
-                        <tr><td colspan="3">Loading ads data...</td></tr>
+                        <tr>
+                            <td colspan="4" class="loading">Loading ads data...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Settings Section -->
-            <div id="settings-management" style="display: none;">
-                <h2>Settings</h2>
-                <p>Settings will appear here</p>
-            </div>
+            <!-- Other Sections... -->
         </div>
     </div>
 
@@ -115,8 +101,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-    <!-- Firebase Configuration -->
     <script>
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
             authDomain: "taprace-63f8e.firebaseapp.com",
@@ -134,69 +120,27 @@
         document.addEventListener('DOMContentLoaded', () => {
             const auth = firebase.auth();
             
-            // Login Handler
-            document.getElementById('login-btn').addEventListener('click', async () => {
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const errorElement = document.getElementById('login-error');
-                
-                try {
-                    await auth.signInWithEmailAndPassword(email, password);
-                } catch (error) {
-                    errorElement.textContent = error.message;
-                }
-            });
-
-            // Logout Handler
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                auth.signOut();
-            });
-
             // Auth State Listener
             auth.onAuthStateChanged(user => {
                 if (user) {
                     document.getElementById('login-page').style.display = 'none';
                     document.getElementById('admin-dashboard').style.display = 'block';
-                    // Show default section
-                    showSection('ads-management');
-                } else {
-                    document.getElementById('admin-dashboard').style.display = 'none';
-                    document.getElementById('login-page').style.display = 'block';
+                    showSection('players-management');
                 }
             });
 
             // Section Navigation
             function showSection(sectionId) {
-                // Hide all sections
                 document.querySelectorAll('#content > div').forEach(div => {
                     div.style.display = 'none';
                 });
-                // Show selected section
                 document.getElementById(sectionId).style.display = 'block';
             }
 
-            // Set up section buttons
+            // Navigation Event Listeners
             document.getElementById('manage-players').addEventListener('click', () => showSection('players-management'));
-            document.getElementById('manage-leaderboard').addEventListener('click', () => showSection('leaderboard-management'));
-            document.getElementById('manage-withdrawals').addEventListener('click', () => showSection('withdrawals-management'));
             document.getElementById('manage-ads').addEventListener('click', () => showSection('ads-management'));
-            document.getElementById('settings').addEventListener('click', () => showSection('settings-management'));
         });
     </script>
-
-    <!-- Load other scripts -->
-<!-- In the content area -->
-<div id="settings-management" style="display: none;">
-    <!-- Settings will load here -->
-</div>
-
-<!-- Script reference -->
-<script src="settings.js"></script>
-    <script src="admin.js"></script>
-<script src="players.js"></script>
-<script src="withdrawals.js"></script>
-<script src="ads.js"></script>
-<script src="leaderboard.js"></script>
-<script src="settings.js"></script>
 </body>
 </html>
