@@ -3,44 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="./admin.css">
+    <title>TapBattle Admin</title>
+    <style>
+        /* Minimal CSS for performance */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #1a1c2c;
+            color: white;
+        }
+        #admin-dashboard { display: none; }
+        nav { margin: 20px 0; }
+        button { 
+            padding: 10px 15px;
+            margin-right: 10px;
+            background: #41a6f6;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2A2F4F;
+        }
+        th { background: #2A2F4F; }
+    </style>
 </head>
 <body>
+    <!-- Login Section -->
     <div id="login-page">
         <h2>Admin Login</h2>
-        <input type="email" id="email" placeholder="Enter Email">
-        <input type="password" id="password" placeholder="Enter Password">
+        <input type="email" id="email" placeholder="Admin Email">
+        <input type="password" id="password" placeholder="Password">
         <button id="login-btn">Login</button>
         <p id="login-error" style="color: red;"></p>
     </div>
 
-    <div id="admin-dashboard" style="display: none;">
-        <h1>Admin Panel</h1>
-        <button id="logout-btn">Logout</button>
-
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard">
+        <button id="logout-btn" style="float:right">Logout</button>
+        <h1>TapBattle Admin</h1>
+        
         <nav>
-            <button id="manage-players">Manage Players</button>
-            <button id="manage-leaderboard">Leaderboard Control</button>
-            <button id="manage-withdrawals">Withdraw Requests</button>
-            <button id="manage-ads">Ads Management</button>
-            <button id="settings">Settings</button>
+            <button data-section="players">Manage Players</button>
+            <button data-section="withdrawals">Withdraw Requests</button>
+            <button data-section="ads">Ads Management</button>
+            <button data-section="settings">Settings</button>
         </nav>
 
-        <div id="content"></div>
+        <!-- Content Sections -->
+        <div id="content">
+            <!-- Players Section -->
+            <div id="players" style="display:none">
+                <h3>Players Management</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player ID</th>
+                            <th>Username</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="players-list"></tbody>
+                </table>
+            </div>
+
+            <!-- Withdrawals Section -->
+            <div id="withdrawals" style="display:none">
+                <h3>Withdraw Requests</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Amount</th>
+                            <th>Wallet</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawals-list"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-<!-- Your admin.js -->
-<script src="/admin/admin.js" defer></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+            authDomain: "taprace-63f8e.firebaseapp.com",
+            databaseURL: "https://taprace-taffe-default-rtdb.firebaseio.com",
+            projectId: "taprace-63f8e",
+            storageBucket: "taprace-63f8e.appspot.com",
+            messagingSenderId: "93332718324",
+            appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+        };
 
-<script>
-    console.log(firebase);
-</script>
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
 
+        // Auth State Listener
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                loadPlayers();
+            } else {
+                document.getElementById('admin-dashboard').style.display = 'none';
+                document.getElementById('login-page').style.display = 'block';
+            }
+        });
+
+        // Login Handler
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    document.getElementById('login-error').textContent = error.message;
+                });
+        });
+
+        // Logout Handler
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            auth.signOut();
+        });
+
+        // Navigation
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Hide all sections
+                document.querySelectorAll('#content > div').forEach(div => {
+                    div.style.display = 'none';
+                });
+                // Show selected section
+                document.getElementById(this.dataset.section).style.display = 'block';
+                
+                // Load data
+                switch(this.dataset.section) {
+                    case 'players': loadPlayers(); break;
+                    case 'withdrawals': loadWithdrawals(); break;
+                }
+            });
+        });
+
+        // Load Players
+        async function loadPlayers() {
+            const snapshot = await db.ref('players').get();
+            const players = snapshot.val();
+            const tbody = document.getElementById('players-list');
+            tbody.innerHTML = '';
+            
+            for(const [playerId, playerData] of Object.entries(players)) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${playerId}</td>
+                        <td>${playerData.username || 'N/A'}</td>
+                        <td>${playerData.score || 0}</td>
+                        <td>
+                            <button onclick="deletePlayer('${playerId}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Delete Player
+        async function deletePlayer(playerId) {
+            if(confirm('Delete this player?')) {
+                await db.ref(`players/${playerId}`).remove();
+                loadPlayers();
+            }
+        }
+
+        // Load Withdrawals
+        async function loadWithdrawals() {
+            const snapshot = await db.ref('withdraw_requests').get();
+            const requests = snapshot.val();
+            const tbody = document.getElementById('withdrawals-list');
+            tbody.innerHTML = '';
+            
+            for(const [requestId, request] of Object.entries(requests)) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${request.playerName}</td>
+                        <td>${request.amount}</td>
+                        <td>${request.wallet}</td>
+                        <td>
+                            <button onclick="approveWithdrawal('${requestId}')">Approve</button>
+                            <button onclick="rejectWithdrawal('${requestId}')">Reject</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Withdrawal Actions
+        async function approveWithdrawal(requestId) {
+            await db.ref(`withdraw_requests/${requestId}/status`).set('approved');
+            loadWithdrawals();
+        }
+
+        async function rejectWithdrawal(requestId) {
+            await db.ref(`withdraw_requests/${requestId}/status`).set('rejected');
+            loadWithdrawals();
+        }
+    </script>
 </body>
 </html>
