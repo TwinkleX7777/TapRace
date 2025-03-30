@@ -7,60 +7,103 @@
     <title>Admin Panel</title>
 </head>
 <body>
-    <div class="container">
-        <!-- Theme Switcher -->
-        <button class="theme-switch" onclick="toggleTheme()">Switch Theme</button>
-
-        <!-- Players Management Section -->
-        <div class="section">
-            <h2>Players Management</h2>
-            
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Player ID</th>
-                            <th>Name</th>
-                            <th>Score</th>
-                            <th>Last Active</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>-OMleF49AEvYHwiAbpMB</td>
-                            <td>Khan</td>
-                            <td>0</td>
-                            <td>Invalid Date</td>
-                            <td>
-                                <button class="btn delete-btn" onclick="deletePlayer(this)">Delete</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>-OMleFDJ3-Yw9gMEzz9p</td>
-                            <td>abcdef</td>
-                            <td>0</td>
-                            <td>Invalid Date</td>
-                            <td>
-                                <button class="btn delete-btn" onclick="deletePlayer(this)">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <input type="email" id="email" placeholder="Admin Email">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-btn" class="btn">Login</button>
+            <p id="login-error" class="error-msg"></p>
         </div>
     </div>
 
+    <!-- Admin Dashboard (Hidden by default) -->
+    <div id="admin-dashboard" style="display: none;">
+        <button id="logout-btn" class="logout-btn">Logout</button>
+        <h1>Players Management</h1>
+        
+        <!-- Content Sections -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Player ID</th>
+                        <th>Name</th>
+                        <th>Score</th>
+                        <th>Last Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>-OMleF49AEvYHwiAbpMB</td>
+                        <td>Khan</td>
+                        <td>0</td>
+                        <td>Invalid Date</td>
+                        <td>
+                            <button class="btn delete-btn" onclick="deletePlayer(this)">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- Add more rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <!-- Main Script -->
     <script>
-        // Theme Toggle Function
-        function toggleTheme() {
-            document.body.classList.toggle('dark-theme');
-        }
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+            authDomain: "taprace-63f8e.firebaseapp.com",
+            projectId: "taprace-63f8e",
+            storageBucket: "taprace-63f8e.appspot.com",
+            messagingSenderId: "93332718324",
+            appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+        };
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Auth State Listener
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is logged in
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+            } else {
+                // User is logged out
+                document.getElementById('admin-dashboard').style.display = 'none';
+                document.getElementById('login-page').style.display = 'flex';
+            }
+        });
+
+        // Login Handler
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    document.getElementById('login-error').textContent = error.message;
+                });
+        });
+
+        // Logout Handler
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            auth.signOut();
+        });
 
         // Delete Player Function
-        function deletePlayer(button) {
-            const row = button.closest('tr');
-            row.parentNode.removeChild(row);
+        function deletePlayer(btn) {
+            const row = btn.closest('tr');
+            row.remove();
         }
     </script>
 </body>
