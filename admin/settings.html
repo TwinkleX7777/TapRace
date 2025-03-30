@@ -1,15 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
-    <link rel="stylesheet" href="admin.css">
-</head>
-<body>
-    <h2>Settings</h2>
-    <div id="settings-panel">
-        <!-- General settings options go here -->
-    </div>
-</body>
-</html>
+// settings.js
+document.addEventListener("DOMContentLoaded", () => {
+    const db = firebase.database();
+    const settingsContent = document.getElementById('settings-management');
+
+    const defaultSettings = {
+        min_withdrawal: 10,
+        max_daily_taps: 1000,
+        maintenance_mode: false
+    };
+
+    function loadSettings() {
+        settingsContent.innerHTML = '<p>Loading settings...</p>';
+        
+        db.ref('settings').once('value', snapshot => {
+            const settings = snapshot.exists() ? snapshot.val() : defaultSettings;
+            
+            const html = `
+                <h2>System Settings</h2>
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label>Minimum Withdrawal ($):</label>
+                        <input type="number" id="min-withdrawal" value="${settings.min_withdrawal}" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Max Daily Taps:</label>
+                        <input type="number" id="max-taps" value="${settings.max_daily_taps}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Maintenance Mode:</label>
+                        <select id="maintenance-mode">
+                            <option value="false" ${!settings.maintenance_mode ? 'selected' : ''}>Disabled</option>
+                            <option value="true" ${settings.maintenance_mode ? 'selected' : ''}>Enabled</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="save-btn">Save Settings</button>
+                </form>
+            `;
+            
+            settingsContent.innerHTML = html;
+        });
+    }
+
+    document.getElementById('settings-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        saveSettings();
+    });
+
+    function saveSettings() {
+        const settings = {
+            min_withdrawal: Number(document.getElementById('min-withdrawal').value),
+            max_daily_taps: Number(document.getElementById('max-taps').value),
+            maintenance_mode: document.getElementById('maintenance-mode').value === 'true'
+        };
+
+        db.ref('settings').update(settings)
+            .then(() => alert('Settings saved successfully!'))
+            .catch(error => alert('Error saving settings: ' + error.message));
+    }
+
+    document.getElementById('settings').addEventListener('click', loadSettings);
+});
