@@ -1,12 +1,12 @@
-/* admin.css - Minimal & Fast */
+/* admin.css - Clean White Theme */
 :root {
   --primary: #2A2F4F;
   --secondary: #41a6f6;
   --danger: #ff5252;
   --success: #4CAF50;
-  --background: #0f0f1f;
-  --text: #ffffff;
-  --border: #2A2F4F;
+  --background: #ffffff;
+  --text: #2c3e50;
+  --border: #e0e0e0;
 }
 
 /* Base Reset */
@@ -28,22 +28,22 @@ body {
   max-width: 400px;
   margin: 100px auto;
   padding: 2rem;
-  background: var(--primary);
+  background: white;
   border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 #login-page h2 {
   margin-bottom: 1.5rem;
   text-align: center;
+  color: var(--primary);
 }
 
 #login-page input {
   width: 100%;
   padding: 12px;
   margin-bottom: 1rem;
-  background: #ffffff0d;
   border: 1px solid var(--border);
-  color: var(--text);
   border-radius: 4px;
 }
 
@@ -89,9 +89,9 @@ nav button {
   padding: 10px 20px;
   margin-right: 10px;
   background: var(--primary);
+  color: white;
   border: none;
   border-radius: 4px;
-  color: var(--text);
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -105,7 +105,8 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1.5rem;
-  background: var(--primary);
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 th, td {
@@ -116,6 +117,7 @@ th, td {
 
 th {
   background: var(--primary);
+  color: white;
 }
 
 /* Buttons */
