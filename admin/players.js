@@ -1,25 +1,26 @@
-// players.js
-function loadPlayers() {
-    const content = document.getElementById('players-management');
-    content.innerHTML = '<p>Loading players...</p>';
+// ads.js
+function loadAdsSettings() {
+    const adSettings = document.getElementById('ad-settings');
+    adSettings.innerHTML = '<tr><td colspan="3">Loading ads...</td></tr>';
 
-    firebase.database().ref('players').once('value').then(snapshot => {
-        let html = '<h2>Players List</h2><table border="1" style="width:100%">';
-        html += '<tr><th>ID</th><th>Name</th><th>Score</th></tr>';
+    firebase.database().ref('ads').once('value').then(snapshot => {
+        adSettings.innerHTML = '';
+        if (!snapshot.exists()) return;
 
-        snapshot.forEach(player => {
-            const data = player.val();
-            html += `
-                <tr>
-                    <td>${player.key}</td>
-                    <td>${data.name || 'Anonymous'}</td>
-                    <td>${data.score || 0}</td>
-                </tr>
-            `;
+        snapshot.forEach(network => {
+            const networkName = network.key;
+            Object.entries(network.val()).forEach(([adType, isActive]) => {
+                adSettings.innerHTML += `
+                    <tr>
+                        <td>${networkName}</td>
+                        <td>${adType.replace(/_/g, ' ')}</td>
+                        <td>${isActive ? '✅ Active' : '❌ Disabled'}</td>
+                    </tr>
+                `;
+            });
         });
-
-        content.innerHTML = html + '</table>';
     });
 }
 
-document.getElementById('manage-players').addEventListener('click', loadPlayers);
+// Connect to button click
+document.getElementById('manage-ads').addEventListener('click', loadAdsSettings);
