@@ -1,215 +1,131 @@
-/* admin.css - Modern Professional Design */
 :root {
     --primary: #2A2F4F;
     --secondary: #917FB3;
     --accent: #E5BEEC;
-    --success: #50C878;
-    --danger: #FF6B6B;
-    --background: #F7F7F7;
+    --success: #4CAF50;
+    --danger: #F44336;
+    --background: #F8F9FA;
     --text: #2A2F4F;
     --card-bg: #FFFFFF;
-    --border: #E0E0E0;
+    --border: #DEE2E6;
 }
 
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-}
-
+/* Base Styles */
 body {
+    font-family: 'Inter', sans-serif;
     background-color: var(--background);
     color: var(--text);
-    line-height: 1.6;
-    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
 }
 
-/* Login Page - Glassmorphism Design */
-#login-page {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 2.5rem;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    max-width: 400px;
-    margin: 5% auto;
-    border: 1px solid rgba(255,255,255,0.3);
-    animation: slideUp 0.5s ease forwards;
-}
-
-@keyframes slideUp {
-    to { transform: translateY(0); opacity: 1; }
-}
-
-#login-page h2 {
-    margin-bottom: 2rem;
-    color: var(--primary);
-    font-size: 1.8rem;
-    text-align: center;
-    font-weight: 600;
-}
-
-#login-page input {
-    width: 100%;
-    padding: 12px 20px;
-    margin-bottom: 1.5rem;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-#login-page input:focus {
-    border-color: var(--secondary);
-    box-shadow: 0 0 0 3px rgba(145,127,179,0.2);
-}
-
-#login-page button {
-    width: 100%;
-    padding: 14px;
+/* Login Section */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
-/* Admin Dashboard - Modern Layout */
-#admin-dashboard {
+.login-card {
     background: var(--card-bg);
+    padding: 2.5rem;
     border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Admin Dashboard */
+.admin-container {
     max-width: 1400px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-#logout-btn {
-    background: var(--danger);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    float: right;
-    transition: all 0.3s ease;
-    margin: 15px 0;
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
-/* Navigation - Modern Tabs */
-nav {
-    background: var(--primary);
-    padding: 1rem 2rem;
+.admin-nav {
     display: flex;
     gap: 1rem;
-    border-bottom: 3px solid rgba(255,255,255,0.1);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
 }
 
-nav button {
-    background: rgba(255,255,255,0.1);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-nav button:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-/* Content Area - Card Style */
-#content {
-    padding: 2rem;
-    min-height: 60vh;
-    background: var(--card-bg);
-    border-radius: 12px;
-    margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-/* Modern Table Design */
+/* Table Styling */
 .data-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
     background: var(--card-bg);
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .data-table th {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    background: var(--primary);
     color: white;
-    padding: 16px;
+    padding: 1rem;
     text-align: left;
-    font-weight: 600;
 }
 
 .data-table td {
-    padding: 14px;
+    padding: 1rem;
     border-bottom: 1px solid var(--border);
-    background: var(--card-bg);
-}
-
-.data-table tr:hover td {
-    background: #f8f7ff;
 }
 
 /* Button Styles */
-.button-group {
-    display: flex;
-    gap: 8px;
-}
-
 .btn {
-    padding: 8px 16px;
+    padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.btn-danger {
+.login-btn {
+    background: var(--primary);
+    color: white;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.nav-btn {
+    background: transparent;
+    color: var(--text);
+    border: 2px solid var(--border);
+}
+
+.nav-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.danger-btn {
     background: var(--danger);
     color: white;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    nav {
+    .admin-nav {
         flex-wrap: wrap;
-        padding: 1rem;
     }
     
-    nav button {
-        flex: 1 1 150px;
-    }
-    
-    #content {
-        padding: 1rem;
+    .nav-btn {
+        flex: 1 1 45%;
     }
     
     .data-table {
         display: block;
         overflow-x: auto;
     }
-}
-
-.loading {
-    padding: 2rem;
-    text-align: center;
-    color: var(--secondary);
 }
