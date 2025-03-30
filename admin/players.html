@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Management</title>
     <style>
-        /* [Keep all your original styles here] */
-        /* ... (Your existing CSS styles) ... */
+        /* Your existing CSS styles */
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- [Keep all your original HTML structure here] -->
-        <!-- ... (Your existing HTML content) ... -->
+        <!-- Your existing HTML structure -->
     </div>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // ========================
-        // Enhanced Firebase Setup
-        // ========================
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
             authDomain: "taprace-63f8e.firebaseapp.com",
@@ -33,131 +29,68 @@
             appId: "1:93332718324:web:4b48350c0b64061eb794a1"
         };
 
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-                console.log("Firebase initialized successfully");
-            }
-        } catch (error) {
-            console.error("Firebase initialization failed:", error);
-        }
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
 
-        // ========================
-        // Enhanced Player Loading
-        // ========================
-        let allPlayers = [];
-
-        function loadPlayers() {
-            console.log("[DEBUG] Starting player load...");
-            
-            const loadingRow = '<tr><td colspan="9">🔃 Loading players...</td></tr>';
-            document.getElementById('player-list').innerHTML = loadingRow;
-
-            db.ref("players").on("value", 
-                (snapshot) => { // Success callback
-                    console.log("[DEBUG] Firebase data received:", snapshot.val());
-                    
-                    if (!snapshot.exists()) {
-                        console.warn("[DEBUG] No data found in 'players' node");
-                        document.getElementById('player-list').innerHTML = 
-                            '<tr><td colspan="9">❌ No players found in database</td></tr>';
-                        return;
-                    }
-
-                    allPlayers = [];
-                    snapshot.forEach((child) => {
-                        const player = child.val();
-                        allPlayers.push({
-                            id: child.key,
-                            name: player.name || 'Anonymous',
-                            email: player.email || 'N/A',
-                            totalClicks: player.totalClicks || 0,
-                            rank: player.rank || 0,
-                            walletBalance: player.walletBalance || 0,
-                            registrationDate: player.registrationDate || 'Unknown',
-                            banned: player.banned || false
-                        });
-                    });
-
-                    console.log(`[DEBUG] Processed ${allPlayers.length} players`);
-                    filterPlayers();
-                },
-                (error) => { // Error callback
-                    console.error("[ERROR] Firebase read failed:", error);
-                    document.getElementById('player-list').innerHTML = 
-                        `<tr><td colspan="9">⚠️ Error: ${error.message}</td></tr>`;
-                }
-            );
-        }
-
-        // ========================
-        // Enhanced Rendering
-        // ========================
-        function renderPlayers(players) {
-            const tbody = document.getElementById("player-list");
-            
-            if (players.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9">🔎 No matching players found</td></tr>';
-                return;
+        // Authentication check
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loadPlayers();
+            } else {
+                window.location.href = '/login.html'; // Redirect if not authenticated
             }
+        });
 
-            tbody.innerHTML = players.map(player => `
-                <tr>
-                    <td>${player.id}</td>
-                    <td>${player.name}</td>
-                    <td>${player.email}</td>
-                    <td>${player.totalClicks}</td>
-                    <td>${player.rank}</td>
-                    <td>${player.walletBalance.toFixed(3)} ETH</td>
-                    <td>${player.registrationDate}</td>
-                    <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
-                    <td class="action-buttons">
-                        <button class="edit-btn" onclick="openEditModal('${player.id}')">Edit</button>
-                        <button class="ban-btn" onclick="toggleBan('${player.id}', ${player.banned})">
-                            ${player.banned ? 'Unban' : 'Ban'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+        // Load players function
+        function loadPlayers() {
+            const playerList = document.getElementById("player-list");
+            playerList.innerHTML = "<tr><td colspan='9'>Loading players...</td></tr>";
 
-        // ========================
-        // Enhanced Error Handling
-        // ========================
-        async function openEditModal(playerId) {
-            try {
-                const snapshot = await db.ref(`players/${playerId}`).once('value');
+            db.ref("players").on("value", (snapshot) => {
+                playerList.innerHTML = "";
+
                 if (!snapshot.exists()) {
-                    alert("Player not found!");
+                    playerList.innerHTML = "<tr><td colspan='9'>No players found</td></tr>";
                     return;
                 }
-                
-                const player = snapshot.val();
-                document.getElementById('editId').value = playerId;
-                document.getElementById('editName').value = player.name;
-                document.getElementById('editEmail').value = player.email;
-                document.getElementById('editBalance').value = player.walletBalance;
-                document.getElementById('editRank').value = player.rank;
-                openModal('editModal');
-            } catch (error) {
-                console.error("Edit modal error:", error);
-                alert("Failed to load player data!");
-            }
+
+                snapshot.forEach((child) => {
+                    const player = child.val();
+                    const row = `
+                        <tr>
+                            <td>${child.key}</td>
+                            <td>${player.name || "Unknown"}</td>
+                            <td>${player.email || "N/A"}</td>
+                            <td>${player.totalClicks || 0}</td>
+                            <td>${player.rank || "N/A"}</td>
+                            <td>${player.walletBalance?.toFixed(3) || '0.000'} ETH</td>
+                            <td>${player.registrationDate || "Unknown"}</td>
+                            <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
+                            <td class="action-buttons">
+                                <button class="edit-btn" onclick="editPlayer('${child.key}')">Edit</button>
+                                <button class="ban-btn" onclick="toggleBan('${child.key}', ${player.banned})">
+                                    ${player.banned ? 'Unban' : 'Ban'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    playerList.innerHTML += row;
+                });
+            }, (error) => {
+                console.error("Firebase error:", error);
+                playerList.innerHTML = `<tr><td colspan='9'>⚠️ Error loading players</td></tr>`;
+            });
         }
 
-        // [Keep the rest of your original functions]
-        // ... (filterPlayers, toggleBan, modal functions, etc) ...
-
-        // ========================
-        // Initialization
-        // ========================
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("[DEBUG] DOM loaded");
-            loadPlayers();
-            document.getElementById('searchInput').addEventListener('input', filterPlayers);
-            document.getElementById('filterSelect').addEventListener('change', filterPlayers);
-        });
+        // Toggle ban function
+        function toggleBan(playerId, isBanned) {
+            const newStatus = !isBanned;
+            db.ref(`players/${playerId}`).update({ banned: newStatus })
+                .then(() => alert(`Player ${newStatus ? 'banned' : 'unbanned'} successfully!`))
+                .catch(error => alert("Error: " + error.message));
+        }
     </script>
 </body>
 </html>
