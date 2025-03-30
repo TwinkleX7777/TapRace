@@ -5,14 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Management</title>
     <style>
-        /* ... (keep previous styles) ... */
-        .add-player-btn {
-            background: #27ae60;
-            color: white;
-            padding: 10px 20px;
-            border: none;
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background: #f0f2f5;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
             border-radius: 5px;
+            width: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            text-align: left;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
             cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .edit-btn { background: #3498db; color: white; }
+        .ban-btn { background: #e74c3c; color: white; }
+        .reset-btn { background: #2ecc71; color: white; }
+        .history-btn { background: #9b59b6; color: white; }
+        .delete-btn { background: #34495e; color: white; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            width: 400px;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+        }
+
+        .modal label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
         }
     </style>
 </head>
@@ -21,7 +114,6 @@
         <div class="header">
             <h2>🔹 Player Management</h2>
             <div class="controls">
-                <button class="add-player-btn" onclick="openCreateModal()">+ Add Player</button>
                 <input type="text" id="searchInput" placeholder="Search players...">
                 <select id="filterSelect">
                     <option value="all">All Players</option>
@@ -32,43 +124,97 @@
             </div>
         </div>
 
-        <!-- ... (keep previous table and modals) ... -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Player ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Clicks</th>
+                    <th>Rank</th>
+                    <th>Balance</th>
+                    <th>Registered</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="player-list">
+                <tr><td colspan="9">Loading players...</td></tr>
+            </tbody>
+        </table>
 
-        <!-- Create Player Modal -->
-        <div class="modal" id="createModal">
-            <h3>Create New Player</h3>
-            <form id="createForm">
-                <label>Name: <input type="text" id="createName" required></label>
-                <label>Email: <input type="email" id="createEmail" required></label>
-                <label>Initial Balance: <input type="number" id="createBalance" step="0.001" required></label>
-                <label>Initial Rank: <input type="number" id="createRank" required></label>
+        <!-- Edit Modal -->
+        <div class="modal" id="editModal">
+            <h3>Edit Player Details</h3>
+            <form id="editForm">
+                <input type="hidden" id="editId">
+                <label>Name: <input type="text" id="editName" required></label>
+                <label>Email: <input type="email" id="editEmail" required></label>
+                <label>Wallet Balance: <input type="number" id="editBalance" step="0.001" required></label>
+                <label>Rank: <input type="number" id="editRank" required></label>
                 <div style="margin-top: 20px;">
-                    <button type="submit" class="edit-btn">Create</button>
+                    <button type="submit" class="edit-btn">Save</button>
                     <button type="button" class="delete-btn" onclick="closeModal()">Cancel</button>
                 </div>
             </form>
         </div>
+
+        <!-- Ban Modal -->
+        <div class="modal" id="banModal">
+            <h3>Ban Player</h3>
+            <form id="banForm">
+                <input type="hidden" id="banPlayerId">
+                <label>Ban Reason: <textarea id="banReason" required></textarea></label>
+                <div style="margin-top: 20px;">
+                    <button type="submit" class="ban-btn">Confirm Ban</button>
+                    <button type="button" class="delete-btn" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- History Modal -->
+        <div class="modal" id="historyModal">
+            <h3>Player History</h3>
+            <div id="historyContent"></div>
+            <button style="margin-top: 15px;" class="delete-btn" onclick="closeModal()">Close</button>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
     </div>
 
-    <!-- Firebase Scripts -->
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
     <script>
-        // ... (keep previous firebase config and initialization) ...
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+            authDomain: "taprace-63f8e.firebaseapp.com",
+            databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
+            projectId: "taprace-63f8e",
+            storageBucket: "taprace-63f8e.appspot.com",
+            messagingSenderId: "93332718324",
+            appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+        };
 
-        let allPlayers = [];
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
+        // Load players
         function loadPlayers() {
             db.ref("players").on("value", (snapshot) => {
-                allPlayers = [];
+                const players = [];
                 snapshot.forEach(child => {
-                    allPlayers.push({
+                    players.push({
                         id: child.key,
                         ...child.val()
                     });
                 });
-                filterPlayers();
+                renderPlayers(players);
             });
         }
 
+        // Render players
         function renderPlayers(players) {
             const tbody = document.getElementById("player-list");
             tbody.innerHTML = "";
@@ -100,34 +246,7 @@
             });
         }
 
-        // Fixed Filter Function
-        function filterPlayers() {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            const filterType = document.getElementById('filterSelect').value;
-            
-            let filtered = allPlayers.filter(player => {
-                const matchSearch = player.name?.toLowerCase().includes(searchQuery) ||
-                                  player.email?.toLowerCase().includes(searchQuery) ||
-                                  player.id?.toLowerCase().includes(searchQuery);
-                return matchSearch;
-            });
-
-            switch(filterType) {
-                case 'top-ranked':
-                    filtered.sort((a, b) => (a.rank || 0) - (b.rank || 0));
-                    break;
-                case 'highest-clicks':
-                    filtered.sort((a, b) => (b.totalClicks || 0) - (a.totalClicks || 0));
-                    break;
-                case 'recent':
-                    filtered.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate));
-                    break;
-            }
-
-            renderPlayers(filtered);
-        }
-
-        // Fixed Edit Function
+        // Edit Player
         async function openEditModal(playerId) {
             const snapshot = await db.ref(`players/${playerId}`).once('value');
             const player = snapshot.val();
@@ -150,46 +269,90 @@
                 email: document.getElementById('editEmail').value,
                 walletBalance: parseFloat(document.getElementById('editBalance').value),
                 rank: parseInt(document.getElementById('editRank').value)
-            }).then(() => {
-                alert('Player updated successfully!');
-                closeModal();
-            }).catch(error => {
-                alert('Error updating player: ' + error.message);
             });
+            
+            closeModal();
         });
 
-        // Create Player Function
-        function openCreateModal() {
-            document.getElementById('createForm').reset();
-            openModal('createModal');
+        // Ban Player
+        function openBanModal(playerId) {
+            document.getElementById('banPlayerId').value = playerId;
+            openModal('banModal');
         }
 
-        document.getElementById('createForm').addEventListener('submit', (e) => {
+        document.getElementById('banForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const newPlayer = {
-                name: document.getElementById('createName').value,
-                email: document.getElementById('createEmail').value,
-                walletBalance: parseFloat(document.getElementById('createBalance').value),
-                rank: parseInt(document.getElementById('createRank').value),
-                totalClicks: 0,
-                registrationDate: new Date().toISOString().split('T')[0],
-                banned: false
-            };
-
-            db.ref('players').push(newPlayer)
-                .then(() => {
-                    alert('Player created successfully!');
-                    closeModal();
-                })
-                .catch(error => {
-                    alert('Error creating player: ' + error.message);
-                });
+            const playerId = document.getElementById('banPlayerId').value;
+            
+            db.ref(`players/${playerId}`).update({
+                banned: true,
+                banReason: document.getElementById('banReason').value,
+                banDate: new Date().toISOString()
+            });
+            
+            closeModal();
         });
+
+        // Unban Player
+        function unbanPlayer(playerId) {
+            if (confirm('Are you sure you want to unban this player?')) {
+                db.ref(`players/${playerId}`).update({
+                    banned: false,
+                    banReason: null,
+                    banDate: null
+                });
+            }
+        }
+
+        // Reset Clicks
+        function resetClicks(playerId) {
+            if (confirm('Reset this player\'s clicks to zero?')) {
+                db.ref(`players/${playerId}/totalClicks`).set(0);
+            }
+        }
+
+        // View History
+        async function viewHistory(playerId) {
+            const snapshot = await db.ref(`players/${playerId}/earningsHistory`).once('value');
+            const history = snapshot.val() || {};
+            
+            let content = '<h4>Earnings History:</h4>';
+            Object.values(history).forEach(txn => {
+                content += `<p>${txn.date}: ${txn.amount} ETH (${txn.method})</p>`;
+            });
+            
+            document.getElementById('historyContent').innerHTML = content;
+            openModal('historyModal');
+        }
+
+        // Delete Player
+        function confirmDelete(playerId) {
+            if (confirm('Permanently delete this player?')) {
+                db.ref(`players/${playerId}`).remove();
+            }
+        }
+
+        // Modal Controls
+        function openModal(id) {
+            document.getElementById(id).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Search and Filter
+        document.getElementById('searchInput').addEventListener('input', filterPlayers);
+        document.getElementById('filterSelect').addEventListener('change', filterPlayers);
+
+        function filterPlayers() {
+            // Implement search and filter logic
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', loadPlayers);
-        document.getElementById('searchInput').addEventListener('input', filterPlayers);
-        document.getElementById('filterSelect').addEventListener('change', filterPlayers);
     </script>
 </body>
 </html>
