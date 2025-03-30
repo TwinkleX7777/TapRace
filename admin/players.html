@@ -1,13 +1,259 @@
-{
-  "players": {
-    "user_12345": {
-      "name": "JohnDoe",
-      "email": "john@example.com",
-      "totalClicks": 3200,
-      "rank": 5,
-      "walletBalance": 0.005,
-      "registrationDate": "2025-03-20",
-      "banned": false
-    }
-  }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Management</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        input, select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            text-align: left;
+        }
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .action-buttons button {
+            padding: 5px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .edit-btn { background: #3498db; color: white; }
+        .ban-btn { background: #e74c3c; color: white; }
+        .add-player-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🔹 Player Management</h2>
+            <div class="controls">
+                <button class="add-player-btn" onclick="openCreateModal()">Add Player</button>
+                <input type="text" id="searchInput" placeholder="Search players...">
+                <select id="filterSelect">
+                    <option value="all">All Players</option>
+                    <option value="top-ranked">Top Ranked</option>
+                    <option value="highest-clicks">Highest Clicks</option>
+                </select>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Player ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Clicks</th>
+                    <th>Rank</th>
+                    <th>Balance</th>
+                    <th>Registered</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="player-list">
+                <tr><td colspan="9">Loading players...</td></tr>
+            </tbody>
+        </table>
+
+        <!-- Add Player Modal -->
+        <div class="modal" id="createModal">
+            <h3>Create New Player</h3>
+            <form id="createForm">
+                <label>Name: <input type="text" id="createName" required></label>
+                <label>Email: <input type="email" id="createEmail" required></label>
+                <label>Initial Clicks: <input type="number" id="createClicks" value="0"></label>
+                <label>Initial Rank: <input type="number" id="createRank" value="1"></label>
+                <label>Initial Balance: <input type="number" id="createBalance" step="0.001" value="0.000"></label>
+                <div style="margin-top:20px">
+                    <button type="submit" class="edit-btn">Create</button>
+                    <button type="button" class="ban-btn" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+            authDomain: "taprace-63f8e.firebaseapp.com",
+            databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
+            projectId: "taprace-63f8e",
+            storageBucket: "taprace-63f8e.appspot.com",
+            messagingSenderId: "93332718324",
+            appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Load Players
+        function loadPlayers() {
+            db.ref("players").on("value", (snapshot) => {
+                const players = [];
+                snapshot.forEach(child => {
+                    const playerData = child.val();
+                    players.push({
+                        id: child.key,
+                        name: playerData.name || 'Unknown',
+                        email: playerData.email || 'N/A',
+                        totalClicks: playerData.totalClicks || 0,
+                        rank: playerData.rank || 'N/A',
+                        walletBalance: playerData.walletBalance?.toFixed(3) || '0.000',
+                        registrationDate: playerData.registrationDate || 'Unknown',
+                        banned: playerData.banned || false
+                    });
+                });
+                renderPlayers(players);
+            }, (error) => {
+                console.error("Firebase error:", error);
+                document.getElementById('player-list').innerHTML = 
+                    '<tr><td colspan="9">⚠️ Error loading players</td></tr>';
+            });
+        }
+
+        // Render Players
+        function renderPlayers(players) {
+            const tbody = document.getElementById("player-list");
+            tbody.innerHTML = "";
+
+            if (players.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9">No players found</td></tr>';
+                return;
+            }
+
+            players.forEach(player => {
+                const row = `
+                    <tr>
+                        <td>${player.id}</td>
+                        <td>${player.name}</td>
+                        <td>${player.email}</td>
+                        <td>${player.totalClicks}</td>
+                        <td>${player.rank}</td>
+                        <td>${player.walletBalance} ETH</td>
+                        <td>${player.registrationDate}</td>
+                        <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
+                        <td class="action-buttons">
+                            <button class="edit-btn">Edit</button>
+                            <button class="ban-btn">Ban</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Add Player
+        document.getElementById('createForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPlayer = {
+                name: document.getElementById('createName').value,
+                email: document.getElementById('createEmail').value,
+                totalClicks: parseInt(document.getElementById('createClicks').value),
+                rank: parseInt(document.getElementById('createRank').value),
+                walletBalance: parseFloat(document.getElementById('createBalance').value),
+                registrationDate: new Date().toISOString().split('T')[0],
+                banned: false
+            };
+
+            db.ref('players').push(newPlayer)
+                .then(() => {
+                    closeModal();
+                    document.getElementById('createForm').reset();
+                })
+                .catch(error => {
+                    alert('Error creating player: ' + error.message);
+                });
+        });
+
+        // Modal Controls
+        function openCreateModal() {
+            document.getElementById('createModal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('createModal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadPlayers);
+    </script>
+</body>
+</html>
