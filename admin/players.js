@@ -1,4 +1,4 @@
-// Firebase Configuration
+// ✅ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
     authDomain: "taprace-63f8e.firebaseapp.com",
@@ -9,19 +9,21 @@ const firebaseConfig = {
     appId: "1:93332718324:web:4b48350c0b64061eb794a1"
 };
 
-// Initialize Firebase
+// ✅ Initialize Firebase
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.database();
 
+// ✅ Load Players from Firebase
 function loadPlayers() {
     const playerList = document.getElementById("player-list");
-    playerList.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
+    playerList.innerHTML = "<tr><td colspan='9'>Loading players...</td></tr>";
 
-    db.ref("players").once("value", (snapshot) => {
+    db.ref("players").on("value", (snapshot) => {
         playerList.innerHTML = "";
 
         if (!snapshot.exists()) {
-            playerList.innerHTML = "<tr><td colspan='3'>No players found</td></tr>";
+            playerList.innerHTML = "<tr><td colspan='9'>No players found</td></tr>";
             return;
         }
 
@@ -29,25 +31,44 @@ function loadPlayers() {
             const player = child.val();
             const row = `
                 <tr>
+                    <td>${child.key}</td>
                     <td>${player.name || "Unknown"}</td>
-                    <td>${player.clicks || 0}</td>
-                    <td>
-                        <button onclick="resetClicks('${child.key}')">Reset Clicks</button>
+                    <td>${player.email || "N/A"}</td>
+                    <td>${player.totalClicks || 0}</td>
+                    <td>${player.rank || "N/A"}</td>
+                    <td>${player.walletBalance ? player.walletBalance.toFixed(3) + " ETH" : "0.000 ETH"}</td>
+                    <td>${player.registrationDate || "Unknown"}</td>
+                    <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
+                    <td class="action-buttons">
+                        <button class="edit-btn" onclick="editPlayer('${child.key}')">Edit</button>
+                        <button class="ban-btn" onclick="toggleBan('${child.key}', ${player.banned})">
+                            ${player.banned ? 'Unban' : 'Ban'}
+                        </button>
                     </td>
                 </tr>
             `;
             playerList.innerHTML += row;
         });
-    }).catch(error => {
-        playerList.innerHTML = `<tr><td colspan='3'>Error: ${error.message}</td></tr>`;
+    }, (error) => {
         console.error("Firebase error:", error);
+        playerList.innerHTML = `<tr><td colspan='9'>⚠️ Error loading players</td></tr>`;
     });
 }
 
-function resetClicks(playerId) {
-    db.ref(`players/${playerId}/clicks`).set(0)
-        .then(() => alert("Clicks reset successfully!"))
+// ✅ Toggle Player Ban/Unban
+function toggleBan(playerId, isBanned) {
+    const newStatus = !isBanned;
+    db.ref(`players/${playerId}`).update({ banned: newStatus })
+        .then(() => alert(`Player ${newStatus ? 'banned' : 'unbanned'} successfully!`))
         .catch(error => alert("Error: " + error.message));
 }
 
-document.addEventListener("DOMContentLoaded", loadPlayers);
+// ✅ Ensure Firebase Authentication Before Loading Players
+auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log("✅ User authenticated, loading players...");
+        loadPlayers();
+    } else {
+        console.log("❌ User not logged in");
+    }
+});
