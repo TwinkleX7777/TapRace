@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Initialize Firebase
+    // Firebase Configuration (REPLACE WITH YOURS)
     const firebaseConfig = {
         apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
         authDomain: "taprace-63f8e.firebaseapp.com",
@@ -31,10 +31,19 @@ document.addEventListener("DOMContentLoaded", function() {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
         const errorElement = document.getElementById("login-error");
+        const loginBtn = document.getElementById("login-btn");
+
+        errorElement.textContent = "";
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Logging in...";
 
         auth.signInWithEmailAndPassword(email, password)
-            .catch((error) => {
+            .catch(error => {
                 errorElement.textContent = error.message;
+            })
+            .finally(() => {
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Login";
             });
     });
 
@@ -52,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Section Visibility Control
+    // Section Management
     function showSection(sectionId) {
         document.querySelectorAll('#content > div').forEach(div => {
             div.style.display = 'none';
@@ -61,7 +70,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (section) section.style.display = 'block';
     }
 
-    // Data Loading Controller
     function loadSectionData(sectionId) {
         switch(sectionId) {
             case 'players':
@@ -82,29 +90,28 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Players Management
+    // Data Loaders
     async function loadPlayers() {
         const snapshot = await db.ref('players').get();
         const players = snapshot.val();
         const tbody = document.getElementById("players-list");
         tbody.innerHTML = '';
         
-        for(const [playerId, playerData] of Object.entries(players)) {
+        for(const [id, player] of Object.entries(players)) {
             tbody.innerHTML += `
                 <tr>
-                    <td>${playerId}</td>
-                    <td>${playerData.username || 'N/A'}</td>
-                    <td>${playerData.score || 0}</td>
+                    <td>${id}</td>
+                    <td>${player.username || 'N/A'}</td>
+                    <td>${player.score || 0}</td>
                     <td>
                         <button class="delete-btn" 
-                                onclick="deletePlayer('${playerId}')">Delete</button>
+                                onclick="deletePlayer('${id}')">Delete</button>
                     </td>
                 </tr>
             `;
         }
     }
 
-    // Leaderboard Management
     async function loadLeaderboard() {
         const snapshot = await db.ref('leaderboard').get();
         const leaderboard = snapshot.val();
@@ -123,7 +130,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Withdrawal Management
     async function loadWithdrawals() {
         const snapshot = await db.ref('withdraw_requests').get();
         const requests = snapshot.val();
@@ -147,7 +153,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Ads Management
     async function loadAds() {
         const snapshot = await db.ref('ads').get();
         const ads = snapshot.val();
@@ -170,7 +175,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Settings Management
     async function loadSettings() {
         const snapshot = await db.ref('settings').get();
         const settings = snapshot.val();
