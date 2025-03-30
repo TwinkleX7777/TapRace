@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Management</title>
     <style>
+        /* All original styles preserved */
         body { 
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -180,7 +181,36 @@
         const db = firebase.database();
         let allPlayers = [];
 
-        // Load Players
+        // Fixed Add Player Functions
+        function openCreateModal() {
+            document.getElementById('createForm').reset();
+            openModal('createModal');
+        }
+
+        document.getElementById('createForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPlayer = {
+                name: document.getElementById('createName').value,
+                email: document.getElementById('createEmail').value,
+                totalClicks: parseInt(document.getElementById('createClicks').value),
+                rank: parseInt(document.getElementById('createRank').value),
+                walletBalance: parseFloat(document.getElementById('createBalance').value),
+                registrationDate: new Date().toISOString().split('T')[0],
+                banned: false
+            };
+
+            const newPlayerRef = db.ref('players').push();
+            newPlayerRef.set(newPlayer)
+                .then(() => {
+                    alert('Player added successfully!');
+                    closeModal();
+                })
+                .catch((error) => {
+                    alert('Error adding player: ' + error.message);
+                });
+        });
+
+        // Rest of the original code remains unchanged
         function loadPlayers() {
             db.ref("players").on("value", (snapshot) => {
                 allPlayers = [];
@@ -205,7 +235,6 @@
             });
         }
 
-        // Filter and Sort Players
         function filterPlayers() {
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const filterType = document.getElementById('filterSelect').value;
@@ -234,7 +263,6 @@
             renderPlayers(filtered);
         }
 
-        // Render Players
         function renderPlayers(players) {
             const tbody = document.getElementById("player-list");
             tbody.innerHTML = "";
@@ -267,7 +295,6 @@
             });
         }
 
-        // Edit Player Functions
         async function openEditModal(playerId) {
             const snapshot = await db.ref(`players/${playerId}`).once('value');
             const player = snapshot.val();
@@ -296,7 +323,6 @@
             });
         });
 
-        // Ban/Unban Player
         function toggleBan(playerId, isBanned) {
             const newStatus = !isBanned;
             const updates = {
@@ -310,30 +336,6 @@
                 });
         }
 
-        // Add Player Functions
-        document.getElementById('createForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newPlayer = {
-                name: document.getElementById('createName').value,
-                email: document.getElementById('createEmail').value,
-                totalClicks: parseInt(document.getElementById('createClicks').value),
-                rank: parseInt(document.getElementById('createRank').value),
-                walletBalance: parseFloat(document.getElementById('createBalance').value),
-                registrationDate: new Date().toISOString().split('T')[0],
-                banned: false
-            };
-
-            db.ref('players').push(newPlayer)
-                .then(() => {
-                    closeModal();
-                    document.getElementById('createForm').reset();
-                })
-                .catch(error => {
-                    alert('Error creating player: ' + error.message);
-                });
-        });
-
-        // Modal Controls
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
@@ -344,7 +346,6 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        // Event Listeners
         document.getElementById('searchInput').addEventListener('input', filterPlayers);
         document.getElementById('filterSelect').addEventListener('change', filterPlayers);
         document.addEventListener('DOMContentLoaded', loadPlayers);
