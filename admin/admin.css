@@ -1,194 +1,281 @@
-/* admin.css */
-/* Reset default styles */
+/* admin.css - Modern Professional Design */
+:root {
+    --primary: #2A2F4F;
+    --secondary: #917FB3;
+    --accent: #E5BEEC;
+    --success: #50C878;
+    --danger: #FF6B6B;
+    --background: #F7F7F7;
+    --text: #2A2F4F;
+    --card-bg: #FFFFFF;
+    --border: #E0E0E0;
+}
+
+/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 body {
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: var(--background);
+    color: var(--text);
     line-height: 1.6;
     padding: 20px;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
-/* Login Page Styles */
+/* Login Page - Glassmorphism Design */
 #login-page {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     max-width: 400px;
-    margin: 50px auto;
+    margin: 5% auto;
+    border: 1px solid rgba(255,255,255,0.3);
+    transform: translateY(20px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+@keyframes slideUp {
+    to { transform: translateY(0); opacity: 1; }
 }
 
 #login-page h2 {
-    margin-bottom: 1.5rem;
-    color: #2c3e50;
+    margin-bottom: 2rem;
+    color: var(--primary);
+    font-size: 1.8rem;
     text-align: center;
+    font-weight: 600;
 }
 
 #login-page input {
-    display: block;
     width: 100%;
-    padding: 10px;
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 12px 20px;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#login-page input:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(145,127,179,0.2);
 }
 
 #login-page button {
     width: 100%;
-    padding: 12px;
-    background-color: #3498db;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    transition: transform 0.2s ease;
 }
 
 #login-page button:hover {
-    background-color: #2980b9;
+    transform: translateY(-2px);
 }
 
-/* Admin Dashboard Styles */
+/* Admin Dashboard - Modern Layout */
 #admin-dashboard {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
 
 #logout-btn {
-    background: #e74c3c;
+    background: var(--danger);
     color: white;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-bottom: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    float: right;
+    transition: all 0.3s ease;
 }
 
 #logout-btn:hover {
-    background: #c0392b;
+    opacity: 0.9;
+    transform: scale(0.98);
 }
 
-/* Navigation Styles */
+/* Navigation - Modern Tabs */
 nav {
-    margin: 1rem 0;
-    padding: 1rem 0;
-    border-bottom: 2px solid #ecf0f1;
+    background: var(--primary);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    border-bottom: 3px solid rgba(255,255,255,0.1);
 }
 
 nav button {
-    background: #3498db;
+    background: rgba(255,255,255,0.1);
     color: white;
-    padding: 8px 16px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-weight: 500;
     cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 nav button:hover {
-    background: #2980b9;
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
 }
 
-/* Content Area Styles */
+nav button::before {
+    content: '•';
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+/* Content Area - Card Style */
 #content {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #fff;
-    border-radius: 6px;
+    padding: 2rem;
+    min-height: 60vh;
 }
 
-/* Table Styles */
-table {
+/* Modern Table Design */
+.data-table {
     width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-    background: white;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-th {
-    background-color: #3498db;
+.data-table th {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
 }
 
-tr:hover {
-    background-color: #f8f9fa;
+.data-table td {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card-bg);
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover td {
+    background: #f8f7ff;
 }
 
 /* Button Styles */
-button {
-    padding: 6px 12px;
-    margin: 2px;
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 8px 16px;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.3s;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
-button:hover {
-    opacity: 0.8;
-}
-
-.approve-btn {
-    background: #2ecc71;
+.btn-primary {
+    background: var(--primary);
     color: white;
 }
 
-.reject-btn {
-    background: #e74c3c;
+.btn-success {
+    background: var(--success);
     color: white;
 }
 
-/* Status Indicators */
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+/* Status Badges */
+.status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
 .status-pending {
-    color: #f1c40f;
-    font-weight: bold;
+    background: #fff3cd;
+    color: #856404;
 }
 
 .status-approved {
-    color: #2ecc71;
-    font-weight: bold;
+    background: #d4edda;
+    color: #155724;
 }
 
 .status-rejected {
-    color: #e74c3c;
-    font-weight: bold;
+    background: #f8d7da;
+    color: #721c24;
 }
 
-/* Form Elements */
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="password"] {
+/* Form Elements - Modern Style */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+.input-field {
     width: 100%;
-    padding: 8px;
-    margin: 4px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
-/* Error Messages */
-#login-error {
-    margin-top: 1rem;
-    text-align: center;
+.input-field:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(145,127,179,0.2);
+}
+
+/* Card Layout */
+.card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
 }
 
 /* Responsive Design */
@@ -197,55 +284,48 @@ input[type="password"] {
         padding: 10px;
     }
     
-    nav button {
-        width: 100%;
-        margin: 5px 0;
+    nav {
+        flex-wrap: wrap;
+        padding: 1rem;
     }
     
-    #admin-dashboard {
-        padding: 1rem;
-/* Add these to your existing admin.css */
-.data-table {
-    width: 100%;
-    margin: 20px 0;
-    border-collapse: collapse;
-}
-
-.data-table th {
-    background: #3498db;
-    color: white;
-    padding: 12px;
-    text-align: left;
-}
-
-.data-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.delete-btn {
-    background: #e74c3c;
-    color: white;
-}
-
-.toggle-btn {
-    background: #2ecc71;
-    color: white;
-}
-
-.status-active {
-    color: #2ecc71;
-    font-weight: bold;
-}
-
-.status-inactive {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-.status-pending {
-    color: #f1c40f;
-    font-weight: bold;
-}
+    nav button {
+        flex: 1 1 150px;
     }
+    
+    #content {
+        padding: 1rem;
+    }
+    
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    padding: 2rem;
+    text-align: center;
+    color: var(--secondary);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary);
+    border-radius: 4px;
 }
