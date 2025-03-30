@@ -102,6 +102,7 @@
                     <option value="all">All Players</option>
                     <option value="top-ranked">Top Ranked</option>
                     <option value="highest-clicks">Highest Clicks</option>
+                    <option value="recent">Recent Signups</option>
                 </select>
             </div>
         </div>
@@ -141,6 +142,22 @@
             </form>
         </div>
 
+        <!-- Edit Player Modal -->
+        <div class="modal" id="editModal">
+            <h3>Edit Player</h3>
+            <form id="editForm">
+                <input type="hidden" id="editId">
+                <label>Name: <input type="text" id="editName" required></label>
+                <label>Email: <input type="email" id="editEmail" required></label>
+                <label>Balance: <input type="number" id="editBalance" step="0.001" required></label>
+                <label>Rank: <input type="number" id="editRank" required></label>
+                <div style="margin-top:20px">
+                    <button type="submit" class="edit-btn">Save</button>
+                    <button type="button" class="ban-btn" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
         <div class="overlay" id="overlay"></div>
     </div>
 
@@ -161,30 +178,60 @@
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        let allPlayers = [];
 
         // Load Players
         function loadPlayers() {
             db.ref("players").on("value", (snapshot) => {
-                const players = [];
+                allPlayers = [];
                 snapshot.forEach(child => {
                     const playerData = child.val();
-                    players.push({
+                    allPlayers.push({
                         id: child.key,
                         name: playerData.name || 'Unknown',
                         email: playerData.email || 'N/A',
                         totalClicks: playerData.totalClicks || 0,
                         rank: playerData.rank || 'N/A',
-                        walletBalance: playerData.walletBalance?.toFixed(3) || '0.000',
+                        walletBalance: playerData.walletBalance || 0,
                         registrationDate: playerData.registrationDate || 'Unknown',
                         banned: playerData.banned || false
                     });
                 });
-                renderPlayers(players);
+                filterPlayers();
             }, (error) => {
                 console.error("Firebase error:", error);
                 document.getElementById('player-list').innerHTML = 
                     '<tr><td colspan="9">⚠️ Error loading players</td></tr>';
             });
+        }
+
+        // Filter and Sort Players
+        function filterPlayers() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const filterType = document.getElementById('filterSelect').value;
+            
+            let filtered = allPlayers.filter(player => {
+                const matchesSearch = player.name.toLowerCase().includes(searchQuery) ||
+                                    player.email.toLowerCase().includes(searchQuery) ||
+                                    player.id.toLowerCase().includes(searchQuery);
+                return matchesSearch;
+            });
+
+            switch(filterType) {
+                case 'top-ranked':
+                    filtered.sort((a, b) => (a.rank - b.rank));
+                    break;
+                case 'highest-clicks':
+                    filtered.sort((a, b) => (b.totalClicks - a.totalClicks));
+                    break;
+                case 'recent':
+                    filtered.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate));
+                    break;
+                default:
+                    filtered.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            renderPlayers(filtered);
         }
 
         // Render Players
@@ -205,12 +252,14 @@
                         <td>${player.email}</td>
                         <td>${player.totalClicks}</td>
                         <td>${player.rank}</td>
-                        <td>${player.walletBalance} ETH</td>
+                        <td>${player.walletBalance.toFixed(3)} ETH</td>
                         <td>${player.registrationDate}</td>
                         <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
                         <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="ban-btn">Ban</button>
+                            <button class="edit-btn" onclick="openEditModal('${player.id}')">Edit</button>
+                            <button class="ban-btn" onclick="toggleBan('${player.id}', ${player.banned})">
+                                ${player.banned ? 'Unban' : 'Ban'}
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -218,7 +267,50 @@
             });
         }
 
-        // Add Player
+        // Edit Player Functions
+        async function openEditModal(playerId) {
+            const snapshot = await db.ref(`players/${playerId}`).once('value');
+            const player = snapshot.val();
+            
+            document.getElementById('editId').value = playerId;
+            document.getElementById('editName').value = player.name;
+            document.getElementById('editEmail').value = player.email;
+            document.getElementById('editBalance').value = player.walletBalance;
+            document.getElementById('editRank').value = player.rank;
+            
+            openModal('editModal');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const playerId = document.getElementById('editId').value;
+            
+            db.ref(`players/${playerId}`).update({
+                name: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                walletBalance: parseFloat(document.getElementById('editBalance').value),
+                rank: parseInt(document.getElementById('editRank').value)
+            }).then(() => {
+                alert('Player updated successfully!');
+                closeModal();
+            });
+        });
+
+        // Ban/Unban Player
+        function toggleBan(playerId, isBanned) {
+            const newStatus = !isBanned;
+            const updates = {
+                banned: newStatus,
+                banDate: newStatus ? new Date().toISOString() : null
+            };
+            
+            db.ref(`players/${playerId}`).update(updates)
+                .then(() => {
+                    alert(`Player ${newStatus ? 'banned' : 'unbanned'} successfully!`);
+                });
+        }
+
+        // Add Player Functions
         document.getElementById('createForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const newPlayer = {
@@ -242,17 +334,19 @@
         });
 
         // Modal Controls
-        function openCreateModal() {
-            document.getElementById('createModal').style.display = 'block';
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
         function closeModal() {
-            document.getElementById('createModal').style.display = 'none';
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
             document.getElementById('overlay').style.display = 'none';
         }
 
-        // Initialize
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', filterPlayers);
+        document.getElementById('filterSelect').addEventListener('change', filterPlayers);
         document.addEventListener('DOMContentLoaded', loadPlayers);
     </script>
 </body>
