@@ -1,3 +1,15 @@
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+    authDomain: "taprace-63f8e.firebaseapp.com",
+    databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
+    projectId: "taprace-63f8e",
+    storageBucket: "taprace-63f8e.appspot.com",
+    messagingSenderId: "93332718324",
+    appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+};
+
+// Initialize Firebase
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -6,7 +18,7 @@ function loadPlayers() {
     playerList.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
 
     db.ref("players").once("value", (snapshot) => {
-        playerList.innerHTML = ""; // Clear loading message
+        playerList.innerHTML = "";
 
         if (!snapshot.exists()) {
             playerList.innerHTML = "<tr><td colspan='3'>No players found</td></tr>";
@@ -32,12 +44,10 @@ function loadPlayers() {
     });
 }
 
-// Function to reset clicks
 function resetClicks(playerId) {
     db.ref(`players/${playerId}/clicks`).set(0)
         .then(() => alert("Clicks reset successfully!"))
         .catch(error => alert("Error: " + error.message));
 }
 
-// Load players on page load
 document.addEventListener("DOMContentLoaded", loadPlayers);
