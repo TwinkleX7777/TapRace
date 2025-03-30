@@ -1,13 +1,26 @@
-// admin.js
 document.addEventListener("DOMContentLoaded", function() {
     const auth = firebase.auth();
     const db = firebase.database();
+
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
+        authDomain: "taprace-63f8e.firebaseapp.com",
+        databaseURL: "https://taprace-taffe-default-rtdb.firebaseio.com",
+        projectId: "taprace-63f8e",
+        storageBucket: "taprace-63f8e.appspot.com",
+        messagingSenderId: "93332718324",
+        appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
 
     // Auth State Listener
     auth.onAuthStateChanged(user => {
         if (user) {
             showDashboard();
-            loadInitialData();
+            showSection('players');
+            loadPlayers();
         } else {
             showLogin();
         }
@@ -18,11 +31,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
         const errorElement = document.getElementById("login-error");
-
-        if (!email || !password) {
-            errorElement.textContent = "Please fill all fields";
-            return;
-        }
 
         auth.signInWithEmailAndPassword(email, password)
             .catch((error) => {
@@ -40,43 +48,38 @@ document.addEventListener("DOMContentLoaded", function() {
         btn.addEventListener('click', function() {
             const sectionId = this.dataset.section;
             showSection(sectionId);
+            loadSectionData(sectionId);
         });
     });
 
-    function showDashboard() {
-        document.getElementById("login-page").style.display = "none";
-        document.getElementById("admin-dashboard").style.display = "block";
-    }
-
-    function showLogin() {
-        document.getElementById("admin-dashboard").style.display = "none";
-        document.getElementById("login-page").style.display = "block";
-    }
-
+    // Section Visibility Control
     function showSection(sectionId) {
-        // Hide all sections
         document.querySelectorAll('#content > div').forEach(div => {
             div.style.display = 'none';
         });
-        
-        // Show selected section
         const section = document.getElementById(sectionId);
         if (section) section.style.display = 'block';
-        
-        // Load section data
+    }
+
+    // Data Loading Controller
+    function loadSectionData(sectionId) {
         switch(sectionId) {
             case 'players':
                 loadPlayers();
                 break;
+            case 'leaderboard':
+                loadLeaderboard();
+                break;
+            case 'withdrawals':
+                loadWithdrawals();
+                break;
             case 'ads':
                 loadAds();
                 break;
+            case 'settings':
+                loadSettings();
+                break;
         }
-    }
-
-    async function loadInitialData() {
-        loadPlayers();
-        loadAds();
     }
 
     // Players Management
@@ -93,8 +96,51 @@ document.addEventListener("DOMContentLoaded", function() {
                     <td>${playerData.username || 'N/A'}</td>
                     <td>${playerData.score || 0}</td>
                     <td>
-                        <button class="action-btn delete-btn" 
+                        <button class="delete-btn" 
                                 onclick="deletePlayer('${playerId}')">Delete</button>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    // Leaderboard Management
+    async function loadLeaderboard() {
+        const snapshot = await db.ref('leaderboard').get();
+        const leaderboard = snapshot.val();
+        const tbody = document.getElementById("leaderboard-list");
+        tbody.innerHTML = '';
+        
+        let rank = 1;
+        for(const [playerId, playerData] of Object.entries(leaderboard)) {
+            tbody.innerHTML += `
+                <tr>
+                    <td>#${rank++}</td>
+                    <td>${playerData.username}</td>
+                    <td>${playerData.score}</td>
+                </tr>
+            `;
+        }
+    }
+
+    // Withdrawal Management
+    async function loadWithdrawals() {
+        const snapshot = await db.ref('withdraw_requests').get();
+        const requests = snapshot.val();
+        const tbody = document.getElementById("withdrawals-list");
+        tbody.innerHTML = '';
+        
+        for(const [requestId, request] of Object.entries(requests)) {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${request.playerName}</td>
+                    <td>${request.amount}</td>
+                    <td>${request.status}</td>
+                    <td>
+                        <button class="approve-btn" 
+                                onclick="approveWithdrawal('${requestId}')">Approve</button>
+                        <button class="delete-btn" 
+                                onclick="rejectWithdrawal('${requestId}')">Reject</button>
                     </td>
                 </tr>
             `;
@@ -112,11 +158,10 @@ document.addEventListener("DOMContentLoaded", function() {
             tbody.innerHTML += `
                 <tr>
                     <td>${adId}</td>
-                    <td>${adData.type || 'N/A'}</td>
+                    <td>${adData.type}</td>
                     <td>${adData.enabled ? 'Active' : 'Disabled'}</td>
                     <td>
-                        <button class="action-btn" 
-                                onclick="toggleAd('${adId}', ${!adData.enabled})">
+                        <button onclick="toggleAd('${adId}', ${!adData.enabled})">
                             ${adData.enabled ? 'Disable' : 'Enable'}
                         </button>
                     </td>
@@ -125,7 +170,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Delete Player
+    // Settings Management
+    async function loadSettings() {
+        const snapshot = await db.ref('settings').get();
+        const settings = snapshot.val();
+        document.getElementById('max-taps').value = settings.max_daily_taps;
+        document.getElementById('min-withdrawal').value = settings.min_withdrawal;
+    }
+
+    // Global Functions
     window.deletePlayer = async function(playerId) {
         if(confirm('Delete this player?')) {
             await db.ref(`players/${playerId}`).remove();
@@ -133,9 +186,37 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Toggle Ad Status
+    window.approveWithdrawal = async function(requestId) {
+        await db.ref(`withdraw_requests/${requestId}/status`).set('approved');
+        loadWithdrawals();
+    }
+
+    window.rejectWithdrawal = async function(requestId) {
+        await db.ref(`withdraw_requests/${requestId}/status`).set('rejected');
+        loadWithdrawals();
+    }
+
     window.toggleAd = async function(adId, status) {
         await db.ref(`ads/${adId}/enabled`).set(status);
         loadAds();
+    }
+
+    window.saveSettings = async function() {
+        await db.ref('settings').update({
+            max_daily_taps: document.getElementById('max-taps').value,
+            min_withdrawal: document.getElementById('min-withdrawal').value
+        });
+        alert('Settings saved successfully!');
+    }
+
+    // UI Control
+    function showDashboard() {
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('admin-dashboard').style.display = 'block';
+    }
+
+    function showLogin() {
+        document.getElementById('admin-dashboard').style.display = 'none';
+        document.getElementById('login-page').style.display = 'block';
     }
 });
