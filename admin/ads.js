@@ -1,42 +1,58 @@
 // ads.js
-const firebaseConfig = {
-    apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
-    authDomain: "taprace-63f8e.firebaseapp.com",
-    databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
-    projectId: "taprace-63f8e",
-    storageBucket: "taprace-63f8e.appspot.com",
-    messagingSenderId: "93332718324",
-    appId: "1:93332718324:web:4b48350c0b64061eb794a1"
-};
+document.addEventListener("DOMContentLoaded", () => {
+    const db = firebase.database();
+    const adsContent = document.getElementById('ads-management');
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// Simple Ads Loader
-document.getElementById('manage-ads').addEventListener('click', () => {
-    // Show ads section
-    document.getElementById('ads-management').style.display = 'block';
-    
-    // Basic loading message
-    document.getElementById('ad-settings').innerHTML = 
-        '<tr><td colspan="3">Loading ads settings...</td></tr>';
-
-    // Load data
-    db.ref("ads").once('value', (snapshot) => {
-        let html = '';
-        snapshot.forEach((network) => {
-            const networkName = network.key;
-            Object.entries(network.val()).forEach(([adType, status]) => {
-                html += `
+    function loadAds() {
+        adsContent.innerHTML = '<p>Loading ad settings...</p>';
+        
+        db.ref('ads').once('value', snapshot => {
+            let html = `
+                <h2>Ads Management</h2>
+                <table class="data-table">
                     <tr>
-                        <td>${networkName}</td>
-                        <td>${adType}</td>
-                        <td>${status ? '✅ Active' : '❌ Disabled'}</td>
+                        <th>Network</th>
+                        <th>Ad Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                `;
-            });
+            `;
+
+            if (snapshot.exists()) {
+                snapshot.forEach(network => {
+                    const networkName = network.key;
+                    network.forEach(adType => {
+                        html += `
+                            <tr>
+                                <td>${networkName}</td>
+                                <td>${adType.key.replace(/_/g, ' ')}</td>
+                                <td class="status-${adType.val() ? 'active' : 'inactive'}">
+                                    ${adType.val() ? '✅ Active' : '❌ Disabled'}
+                                </td>
+                                <td>
+                                    <button onclick="toggleAd('${networkName}', '${adType.key}')" class="toggle-btn">
+                                        ${adType.val() ? 'Disable' : 'Enable'}
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+            } else {
+                html += `<tr><td colspan="4">No ad configurations found</td></tr>`;
+            }
+
+            html += '</table>';
+            adsContent.innerHTML = html;
         });
-        document.getElementById('ad-settings').innerHTML = html;
-    });
+    }
+
+    window.toggleAd = (network, adType) => {
+        const ref = db.ref(`ads/${network}/${adType}`);
+        ref.transaction(current => {
+            return !current;
+        });
+    };
+
+    document.getElementById('manage-ads').addEventListener('click', loadAds);
 });
