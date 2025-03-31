@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Management</title>
     <style>
         /* Your existing CSS styles */
@@ -10,86 +9,54 @@
 </head>
 <body>
     <div class="container">
-        <!-- Your existing HTML structure -->
+        <div class="header">
+            <button onclick="loadPlayers()">Manage Players</button>
+            <!-- Keep other controls -->
+        </div>
+        <table>
+            <tbody id="player-list"></tbody>
+        </table>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBP1Cx8cmvjf24oY1gNiD_-qxis6v6pwNI",
-            authDomain: "taprace-63f8e.firebaseapp.com",
-            databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
-            projectId: "taprace-63f8e",
-            storageBucket: "taprace-63f8e.appspot.com",
-            messagingSenderId: "93332718324",
-            appId: "1:93332718324:web:4b48350c0b64061eb794a1"
+            databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com/"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.database();
 
-        // Authentication check
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                loadPlayers();
-            } else {
-                window.location.href = '/login.html'; // Redirect if not authenticated
-            }
-        });
-
-        // Load players function
         function loadPlayers() {
-            const playerList = document.getElementById("player-list");
-            playerList.innerHTML = "<tr><td colspan='9'>Loading players...</td></tr>";
-
+            console.log("Loading players...");
+            
             db.ref("players").on("value", (snapshot) => {
-                playerList.innerHTML = "";
+                const tbody = document.getElementById("player-list");
+                tbody.innerHTML = "";
 
                 if (!snapshot.exists()) {
-                    playerList.innerHTML = "<tr><td colspan='9'>No players found</td></tr>";
+                    tbody.innerHTML = "<tr><td colspan='9'>No players found</td></tr>";
                     return;
                 }
 
-                snapshot.forEach((child) => {
+                snapshot.forEach(child => {
                     const player = child.val();
-                    const row = `
+                    tbody.innerHTML += `
                         <tr>
                             <td>${child.key}</td>
-                            <td>${player.name || "Unknown"}</td>
-                            <td>${player.email || "N/A"}</td>
-                            <td>${player.totalClicks || 0}</td>
-                            <td>${player.rank || "N/A"}</td>
-                            <td>${player.walletBalance?.toFixed(3) || '0.000'} ETH</td>
-                            <td>${player.registrationDate || "Unknown"}</td>
+                            <td>${player.name}</td>
+                            <td>${player.email}</td>
+                            <td>${player.totalClicks}</td>
+                            <td>${player.rank}</td>
+                            <td>${(player.walletBalance || 0).toFixed(3)} ETH</td>
+                            <td>${player.registrationDate}</td>
                             <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
-                            <td class="action-buttons">
-                                <button class="edit-btn" onclick="editPlayer('${child.key}')">Edit</button>
-                                <button class="ban-btn" onclick="toggleBan('${child.key}', ${player.banned})">
-                                    ${player.banned ? 'Unban' : 'Ban'}
-                                </button>
-                            </td>
                         </tr>
                     `;
-                    playerList.innerHTML += row;
                 });
-            }, (error) => {
-                console.error("Firebase error:", error);
-                playerList.innerHTML = `<tr><td colspan='9'>⚠️ Error loading players</td></tr>`;
             });
-        }
-
-        // Toggle ban function
-        function toggleBan(playerId, isBanned) {
-            const newStatus = !isBanned;
-            db.ref(`players/${playerId}`).update({ banned: newStatus })
-                .then(() => alert(`Player ${newStatus ? 'banned' : 'unbanned'} successfully!`))
-                .catch(error => alert("Error: " + error.message));
         }
     </script>
 </body>
