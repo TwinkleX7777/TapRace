@@ -1,82 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Player Management</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #2c3e50; color: white; }
-        tr:hover { background-color: #f5f5f5; }
-        .edit-btn { background: #3498db; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; }
-        .ban-btn { background: #e74c3c; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2 class="text-2xl font-bold mb-4">Player Management</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Clicks</th>
-                    <th>Rank</th>
-                    <th>Balance</th>
-                    <th>Registered</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="player-list"></tbody>
-        </table>
-    </div>
+<script>
+    // Load Players
+    function loadPlayers() {
+        db.ref("players").on("value", (snapshot) => {
+            const tbody = document.getElementById("player-list");
+            tbody.innerHTML = "";
 
-    <script>
-        // Firebase Database Reference
-        const db = firebase.database();
-
-        // Load Players
-        function loadPlayers() {
-            db.ref("players").on("value", (snapshot) => {
-                const tbody = document.getElementById("player-list");
-                tbody.innerHTML = "";
-
-                snapshot.forEach(child => {
-                    const player = child.val();
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${child.key}</td>
-                            <td>${player.name || 'Anonymous'}</td>
-                            <td>${player.email || 'N/A'}</td>
-                            <td>${player.totalClicks || 0}</td>
-                            <td>${player.rank || 'N/A'}</td>
-                            <td>${(player.walletBalance || 0).toFixed(3)} ETH</td>
-                            <td>${player.registrationDate || 'Unknown'}</td>
-                            <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
-                            <td>
-                                <button class="edit-btn" onclick="editPlayer('${child.key}')">Edit</button>
-                                <button class="ban-btn" onclick="toggleBan('${child.key}', ${player.banned})">
-                                    ${player.banned ? 'Unban' : 'Ban'}
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
+            snapshot.forEach(child => {
+                const player = child.val();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${child.key}</td>
+                        <td>${player.name || 'Anonymous'}</td>
+                        <td>${player.email || 'N/A'}</td>
+                        <td>${player.totalClicks || 0}</td>
+                        <td>${player.rank || 'N/A'}</td>
+                        <td>${(player.walletBalance || 0).toFixed(3)} ETH</td>
+                        <td>${player.registrationDate || 'Unknown'}</td>
+                        <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
+                        <td>
+                            <button class="edit btn" onclick="editPlayer('${child.key}')">Edit</button>
+                            <button class="ban btn" onclick="toggleBan('${child.key}', ${player.banned})">
+                                ${player.banned ? 'Unban' : 'Ban'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
-        }
+        });
+    }
 
-        // Toggle Ban Status
-        function toggleBan(playerId, isBanned) {
-            const newStatus = !isBanned;
-            db.ref(`players/${playerId}`).update({ banned: newStatus })
-                .then(() => alert(`Player ${newStatus ? 'banned' : 'unbanned'} successfully!`))
-                .catch(error => alert("Error: " + error.message));
-        }
+    // Toggle Ban Status
+    function toggleBan(playerId, isBanned) {
+        const newStatus = !isBanned;
+        db.ref(`players/${playerId}`).update({ banned: newStatus })
+            .then(() => alert(`Player ${newStatus ? 'banned' : 'unbanned'} successfully!`))
+            .catch(error => alert("Error: " + error.message));
+    }
 
-        // Initial Load
-        loadPlayers();
-    </script>
-</body>
-</html>
+    // Initial Load
+    loadPlayers();
+</script>
