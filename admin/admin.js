@@ -6,7 +6,7 @@ const firebaseConfig = {
     databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com",
     projectId: "taprace-63f8e",
     storageBucket: "taprace-63f8e.appspot.com",
-    messagingSenderId: "93332718324",
+    messagingSenderId: "93332718324",  // Corrected from messingSenderId
     appId: "1:93332718324:web:4b48350c0b64061eb794a1"
 };
 
