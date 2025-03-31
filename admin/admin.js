@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 for (let script of scripts) {
                     const newScript = document.createElement('script');
                     newScript.text = script.text;
-                    document.body.appendChild(newScript).parentNode.removeChild(newScript);
+                    document.body.appendChild(newScript);
                 }
             })
             .catch(error => {
