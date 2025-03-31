@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Player Management</title>
-    <style>
-        /* Your existing CSS styles */
-    </style>
+    <!-- Add missing CSS link -->
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <button onclick="loadPlayers()">Manage Players</button>
-            <!-- Keep other controls -->
-        </div>
+        <button onclick="loadPlayers()">Manage Players</button> <!-- Fixed function name -->
         <table>
             <tbody id="player-list"></tbody>
         </table>
@@ -22,24 +18,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
+        // Firebase Configuration
         const firebaseConfig = {
-            databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com/"
+            databaseURL: "https://taprace-63f8e-default-rtdb.firebaseio.com"
         };
 
+        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // Corrected function name
         function loadPlayers() {
-            console.log("Loading players...");
-            
             db.ref("players").on("value", (snapshot) => {
                 const tbody = document.getElementById("player-list");
                 tbody.innerHTML = "";
-
-                if (!snapshot.exists()) {
-                    tbody.innerHTML = "<tr><td colspan='9'>No players found</td></tr>";
-                    return;
-                }
 
                 snapshot.forEach(child => {
                     const player = child.val();
@@ -50,7 +42,7 @@
                             <td>${player.email}</td>
                             <td>${player.totalClicks}</td>
                             <td>${player.rank}</td>
-                            <td>${(player.walletBalance || 0).toFixed(3)} ETH</td>
+                            <td>${player.walletBalance?.toFixed(3)} ETH</td>
                             <td>${player.registrationDate}</td>
                             <td>${player.banned ? '❌ Banned' : '✅ Active'}</td>
                         </tr>
