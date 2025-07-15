@@ -1,10 +1,11 @@
-/* Modern gaming fonts */
+/* Mobile-First Design */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Orbitron:wght@500&display=swap');
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -12,29 +13,35 @@ body {
     background: linear-gradient(135deg, #0f0c29, #302b63);
     color: #fff;
     height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
     touch-action: manipulation;
     overflow: hidden;
-    transition: background 0.5s;
     text-transform: uppercase;
     letter-spacing: 1px;
+    position: fixed;
 }
 
 #game-container {
-    width: 95%;
+    width: 100%;
+    height: 100%;
     max-width: 500px;
     text-align: center;
     position: relative;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 #header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 1.5em;
+    margin-bottom: 10px;
+    font-size: clamp(16px, 4vw, 24px);
     text-shadow: 0 0 10px rgba(0,255,255,0.7);
+    flex-shrink: 0;
 }
 
 #timer {
@@ -43,105 +50,67 @@ body {
     animation: pulse 1s infinite alternate;
 }
 
-@keyframes pulse {
-    from { opacity: 1; }
-    to { opacity: 0.7; }
-}
-
 #buttons-grid {
     display: grid;
-    gap: 15px;
-    margin: 0 auto;
+    gap: 8px;
+    width: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 5px;
+    grid-auto-rows: minmax(80px, 1fr);
 }
 
 .game-button {
-    aspect-ratio: 1;
+    min-height: 80px;
     border-radius: 15px;
     border: none;
-    font-size: 1em;
+    font-size: clamp(14px, 4vw, 18px);
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     user-select: none;
-    overflow: hidden;
     font-family: 'Poppins', sans-serif;
     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    transition: transform 0.1s;
+    will-change: transform;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.game-button:active {
+    transform: scale(0.95);
 }
 
 .game-button.safe {
     background: linear-gradient(145deg, #4CAF50, #2E7D32);
     color: white;
-    box-shadow: 0 5px 0 #1B5E20, 0 8px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 5px 0 #1B5E20;
     border: 2px solid #69F0AE;
+    animation: pulse 2s infinite;
 }
 
 .game-button.fake {
     background: linear-gradient(145deg, #FF5252, #D32F2F);
     color: white;
-    box-shadow: 0 5px 0 #B71C1C, 0 8px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 5px 0 #B71C1C;
     border: 2px solid #FF8A80;
 }
 
-/* Level-based themes */
-body.level-1 { background: linear-gradient(135deg, #0f0c29, #302b63); }
-body.level-5 { background: linear-gradient(135deg, #1a2a6c, #b21f1f); }
-body.level-10 { background: linear-gradient(135deg, #000046, #1CB5E0); }
-body.level-15 { background: linear-gradient(135deg, #23074d, #cc5333); }
-body.level-20 { background: linear-gradient(135deg, #000000, #434343); }
-
-/* Enhanced glitch effects */
-.glitch {
-    position: relative;
-    animation: glitch 1s linear infinite;
+/* Dynamic Grid Columns */
+@media (orientation: portrait) {
+    #buttons-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.glitch:before, .glitch:after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: inherit;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.glitch:before {
-    left: 3px;
-    text-shadow: -3px 0 #00f;
-    clip: rect(24px, 550px, 90px, 0);
-    animation: glitch-anim 3s infinite linear alternate-reverse;
-}
-
-.glitch:after {
-    left: -3px;
-    text-shadow: -3px 0 #f00;
-    clip: rect(85px, 550px, 140px, 0);
-    animation: glitch-anim2 3s infinite linear alternate-reverse;
-}
-
-@keyframes glitch-anim {
-    0% { clip: rect(31px, 9999px, 94px, 0); }
-    20% { clip: rect(112px, 9999px, 76px, 0); }
-    40% { clip: rect(85px, 9999px, 77px, 0); }
-    60% { clip: rect(27px, 9999px, 97px, 0); }
-    80% { clip: rect(64px, 9999px, 98px, 0); }
-    100% { clip: rect(61px, 9999px, 85px, 0); }
-}
-
-@keyframes glitch-anim2 {
-    0% { clip: rect(65px, 9999px, 119px, 0); }
-    20% { clip: rect(79px, 9999px, 66px, 0); }
-    40% { clip: rect(74px, 9999px, 103px, 0); }
-    60% { clip: rect(101px, 9999px, 93px, 0); }
-    80% { clip: rect(15px, 9999px, 113px, 0); }
-    100% { clip: rect(73px, 9999px, 109px, 0); }
+@media (orientation: landscape) {
+    #buttons-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 /* Screens */
@@ -158,21 +127,8 @@ body.level-20 { background: linear-gradient(135deg, #000000, #434343); }
     align-items: center;
     z-index: 10;
     padding: 20px;
-    box-sizing: border-box;
     backdrop-filter: blur(5px);
-    border: 2px solid #00ffff;
-    box-shadow: 0 0 20px rgba(0,255,255,0.5);
-}
-
-.hidden {
-    display: none !important;
-}
-
-h2 {
-    color: #00ffff;
-    text-shadow: 0 0 10px rgba(0,255,255,0.7);
-    font-size: 2em;
-    margin-bottom: 20px;
+    overflow-y: auto;
 }
 
 .button-group {
@@ -185,180 +141,53 @@ h2 {
 
 button {
     padding: 12px 24px;
-    font-size: 1.2em;
+    font-size: clamp(14px, 4vw, 18px);
     background: linear-gradient(145deg, #2196F3, #0d47a1);
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s;
     font-family: 'Orbitron', sans-serif;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    box-shadow: 0 4px 0 #0d47a1, 0 6px 10px rgba(0,0,0,0.4);
     min-width: 120px;
 }
 
-button:active {
-    transform: translateY(4px);
-    box-shadow: 0 1px 0 #0d47a1;
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-#challenge-btn {
-    background: linear-gradient(145deg, #FF9800, #E65100);
-    box-shadow: 0 4px 0 #BF360C, 0 6px 10px rgba(0,0,0,0.4);
+@keyframes comboPop {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 
-#restart-btn {
-    background: linear-gradient(145deg, #4CAF50, #2E7D32);
-    box-shadow: 0 4px 0 #1B5E20, 0 6px 10px rgba(0,0,0,0.4);
+.combo-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    color: #ff0;
+    text-shadow: 0 0 10px #f00;
+    animation: comboPop 1s forwards;
+    z-index: 100;
+    pointer-events: none;
 }
 
-/* Input styling */
-#player-name, #share-link {
-    padding: 12px;
-    font-size: 1em;
-    margin: 10px 0;
-    width: 80%;
-    max-width: 300px;
-    border-radius: 8px;
-    border: 2px solid #00ffff;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    font-family: 'Orbitron', sans-serif;
-    text-align: center;
+/* Vibration effect */
+@keyframes vibrate {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
 }
 
-/* Mobile optimizations */
-@media (max-width: 600px) {
-    .game-button {
-        font-size: 0.8em;
-    }
-    
-    #header {
-        font-size: 1.2em;
-    }
-    
-    button {
-        font-size: 1em;
-        padding: 10px 15px;
-        min-width: 100px;
-    }
-    
-    h2 {
-        font-size: 1.5em;
-    }
-    
-    .button-group {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-/* Enhanced Mobile Responsiveness */
-@media (max-width: 600px) {
-    #buttons-grid {
-        gap: 8px;
-        padding: 5px;
-    }
-    
-    .game-button {
-        min-width: 0;
-        max-width: 100%;
-        font-size: 0.7em;
-        border-radius: 10px;
-    }
-    
-    /* Adjust grid columns based on button count */
-    #buttons-grid[style*="4"] {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-    
-    #buttons-grid[style*="6"] {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
-    
-    #buttons-grid[style*="9"] {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
-    
-    #buttons-grid[style*="12"] {
-        grid-template-columns: repeat(4, 1fr) !important;
-    }
-    
-    /* For higher levels */
-    #buttons-grid[style*="16"] {
-        grid-template-columns: repeat(4, 1fr) !important;
-    }
-    
-    #buttons-grid[style*="20"] {
-        grid-template-columns: repeat(5, 1fr) !important;
-    }
-    
-    #buttons-grid[style*="25"] {
-        grid-template-columns: repeat(5, 1fr) !important;
-    }
-}
-
-/* Prevent button text overflow */
-.game-button {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 5px;
-}
-/* Ensure buttons never get too small */
-.game-button {
-    min-width: 50px;
-    min-height: 50px;
-}
-
-/* Better viewport handling */
-@viewport {
-    width: device-width;
-    zoom: 1.0;
-}
-
-/* Prevent text size adjustment */
-html {
-    -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-}
-/* Add this to your existing CSS */
-#game-container {
-    overflow-y: auto;
-    max-height: 100vh;
-    padding: 10px 0;
-}
-
-#buttons-grid {
-    max-height: calc(100vh - 150px); /* Adjust based on your header/footer height */
-    overflow-y: auto;
-    padding: 5px;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-}
-
-/* Mobile-specific adjustments */
-@media (max-width: 600px) {
-    #buttons-grid {
-        grid-template-columns: repeat(3, 1fr) !important; /* Force 3 columns */
-        gap: 6px;
-    }
-    
-    .game-button {
-        min-width: 60px;
-        min-height: 60px;
-        font-size: 0.6em;
-        padding: 2px;
-    }
-    
-    #header {
-        font-size: 1.1em;
-        margin-bottom: 10px;
-    }
-    
-    #game-over-screen, 
-    #challenge-screen, 
-    #challenge-accept-screen {
-        padding: 10px;
-        overflow-y: auto;
-    }
+.vibrate {
+    animation: vibrate 0.3s linear;
 }
