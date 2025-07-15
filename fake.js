@@ -1,64 +1,12 @@
-// Sound effects configuration
-// Update your sounds initialization at the top:
+// Sound effects with preloading
 const sounds = {
-    click: new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3'],
-        volume: 0.7
-    }),
-    explosion: new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-8-bit-game-explosion-1691.mp3'],
-        volume: 0.5
-    }),
-    timer: new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-fast-clock-ticking-1064.mp3'],
-        loop: true,
-        volume: 0.3
-    }),
-    win: new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3'],
-        volume: 0.6
-    }),
-    lose: new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3'],
-        volume: 0.6
-    }),
-    ui: new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3'],
-        volume: 0.4
-    })
+    click: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3'], volume: 0.7, preload: true }),
+    explosion: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-8-bit-game-explosion-1691.mp3'], volume: 0.5, preload: true }),
+    timer: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-fast-clock-ticking-1064.mp3'], volume: 0.3, loop: true, preload: true }),
+    win: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3'], volume: 0.6, preload: true }),
+    lose: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3'], volume: 0.6, preload: true }),
+    ui: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3'], volume: 0.4, preload: true })
 };
-
-// Add this function to preload sounds:
-function preloadSounds() {
-    Object.values(sounds).forEach(sound => {
-        if (sound.state() === 'unloaded') {
-            sound.load();
-        }
-    });
-}
-
-// Call this at game initialization:
-function init() {
-    preloadSounds();
-    setupEventListeners();
-    checkForChallenge();
-}
-
-// Update your handleButtonClick function:
-function handleButtonClick(index) {
-    if (!gameActive) return;
-    
-    sounds.ui.play(); // Play UI sound first
-    
-    if (index === safeButtonIndex) {
-        setTimeout(() => sounds.click.play(), 50); // Slight delay for better feedback
-        currentLevel++;
-        startLevel();
-    } else {
-        setTimeout(() => sounds.explosion.play(), 50);
-        gameOver();
-    }
-}
 
 // Game state
 let currentLevel = 1;
@@ -71,6 +19,9 @@ let challengeSeed = null;
 let isChallengeMode = false;
 let challengerName = null;
 let challengerScore = null;
+let comboCount = 0;
+let lastTapTime = 0;
+const COMBO_BONUS = [0, 0, 5, 10, 15, 20];
 
 // DOM elements
 const elements = {
@@ -96,19 +47,25 @@ const elements = {
     declineChallengeBtn: document.getElementById('decline-challenge-btn')
 };
 
-// Add UI click sounds to all buttons
-document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', () => sounds.ui.play());
-});
-
-// Initialize the game
+// Initialize game
 function init() {
     setupEventListeners();
     checkForChallenge();
+    
+    // Preload all sounds
+    Object.values(sounds).forEach(sound => {
+        if (sound.state() === 'unloaded') {
+            sound.load();
+        }
+    });
 }
 
-// Set up event listeners
 function setupEventListeners() {
+    // UI sounds for all buttons
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => sounds.ui.play());
+    });
+
     elements.restartBtn.addEventListener('click', restartGame);
     elements.challengeBtn.addEventListener('click', showChallengeScreen);
     elements.generateLinkBtn.addEventListener('click', generateChallengeLink);
@@ -118,7 +75,6 @@ function setupEventListeners() {
     elements.declineChallengeBtn.addEventListener('click', declineChallenge);
 }
 
-// Check for challenge in URL
 function checkForChallenge() {
     const urlParams = new URLSearchParams(window.location.search);
     const scoreParam = urlParams.get('score');
@@ -135,7 +91,6 @@ function checkForChallenge() {
     }
 }
 
-// Start the game
 function startGame() {
     if (isChallengeMode) {
         Math.seedrandom(challengeSeed);
@@ -143,44 +98,31 @@ function startGame() {
     startLevel();
 }
 
-// Start a new level
 function startLevel() {
     gameActive = true;
     timeLeft = Math.max(3 - Math.floor(currentLevel / 8), 1);
     elements.levelDisplay.textContent = `LEVEL ${currentLevel}`;
     elements.buttonsGrid.innerHTML = '';
     
-    updateBackgroundTheme();
-    
     const buttonCount = getButtonCount(currentLevel);
     safeButtonIndex = Math.floor(Math.random() * buttonCount);
     
     createButtons(buttonCount);
     startTimer();
+    
+    // Flash effect on level up
+    if (currentLevel > 1) {
+        document.body.classList.add('level-up');
+        setTimeout(() => document.body.classList.remove('level-up'), 500);
+    }
 }
 
-// Update background based on level
-function updateBackgroundTheme() {
-    document.body.className = '';
-    if (currentLevel >= 20) document.body.classList.add('level-20');
-    else if (currentLevel >= 15) document.body.classList.add('level-15');
-    else if (currentLevel >= 10) document.body.classList.add('level-10');
-    else if (currentLevel >= 5) document.body.classList.add('level-5');
-    else document.body.classList.add('level-1');
-}
-
-// Get number of buttons for level
 function getButtonCount(level) {
     return Math.min(4 + Math.floor(level * 2), 25);
 }
 
-// Create game buttons
 function createButtons(count) {
-    // Clear previous grid styles
-    elements.buttonsGrid.removeAttribute('style');
-    
-    // Set data attribute for responsive CSS
-    elements.buttonsGrid.setAttribute('data-button-count', count);
+    elements.buttonsGrid.innerHTML = '';
     
     for (let i = 0; i < count; i++) {
         const button = document.createElement('button');
@@ -191,7 +133,6 @@ function createButtons(count) {
             button.classList.add('safe');
         } else {
             button.textContent = getFakeButtonText();
-            button.setAttribute('data-text', button.textContent);
             button.classList.add('fake');
             addFakeBehavior(button);
         }
@@ -199,23 +140,11 @@ function createButtons(count) {
         button.addEventListener('click', () => handleButtonClick(i));
         elements.buttonsGrid.appendChild(button);
     }
-    
-    // Default grid layout (overridden by media queries when needed)
-    const columns = Math.ceil(Math.sqrt(count));
-    elements.buttonsGrid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 }
 
-// Add behaviors to fake buttons
 function addFakeBehavior(button) {
-    const behaviors = ['shake', 'pulse', 'glitch', 'jitter', 'flip'];
-    const selectedBehaviors = [];
-    
-    if (currentLevel >= 3) selectedBehaviors.push(randomItem(behaviors));
-    if (currentLevel >= 5) selectedBehaviors.push(randomItem(behaviors));
-    if (currentLevel >= 8) selectedBehaviors.push(randomItem(behaviors));
-    
-    selectedBehaviors.forEach(behavior => button.classList.add(behavior));
-    
+    if (currentLevel >= 3) button.classList.add('glitch');
+    if (currentLevel >= 5) button.classList.add('shake');
     if (currentLevel >= 7) {
         setTimeout(() => {
             if (gameActive && button.parentNode) {
@@ -226,14 +155,12 @@ function addFakeBehavior(button) {
     }
 }
 
-// Start the timer
 function startTimer() {
     clearInterval(timer);
     sounds.timer.play();
     timer = setInterval(updateTimer, 100);
 }
 
-// Update timer display
 function updateTimer() {
     timeLeft -= 0.1;
     elements.timerDisplay.textContent = timeLeft.toFixed(1);
@@ -243,145 +170,84 @@ function updateTimer() {
     }
 }
 
-// Handle button clicks
 function handleButtonClick(index) {
     if (!gameActive) return;
     
+    // Vibration feedback
+    if (navigator.vibrate) navigator.vibrate(50);
+    
+    // Combo system
+    const now = Date.now();
+    const isCombo = (now - lastTapTime) < 1000;
+    lastTapTime = now;
+    
+    sounds.ui.play();
+    
     if (index === safeButtonIndex) {
-        sounds.click.play();
+        comboCount = isCombo ? comboCount + 1 : 1;
+        
+        // Combo effects
+        if (comboCount > 2) {
+            showComboEffect(comboCount);
+            currentLevel += COMBO_BONUS[Math.min(comboCount, 5)];
+        }
+        
+        setTimeout(() => sounds.click.play(), 50);
         currentLevel++;
         startLevel();
     } else {
+        comboCount = 0;
+        setTimeout(() => sounds.explosion.play(), 50);
         gameOver();
     }
 }
 
-// Game over handler
+function showComboEffect(count) {
+    const combo = document.createElement('div');
+    combo.className = 'combo-effect';
+    combo.textContent = `COMBO x${count}!`;
+    document.body.appendChild(combo);
+    setTimeout(() => combo.remove(), 1000);
+}
+
 function gameOver() {
     gameActive = false;
     clearInterval(timer);
     sounds.timer.stop();
     
-    updateBestScore();
-    showGameOverScreen();
-    playGameOverEffects();
-    showChallengeResult();
-}
-
-function updateBestScore() {
     if (currentLevel > bestLevel) {
         bestLevel = currentLevel;
         localStorage.setItem('bestLevel', bestLevel);
     }
-}
-
-function showGameOverScreen() {
+    
     elements.finalLevelDisplay.textContent = `REACHED LEVEL ${currentLevel}`;
     elements.bestLevelDisplay.textContent = `BEST LEVEL: ${bestLevel}`;
     elements.funnyTip.textContent = getRandomFunnyTip();
     elements.gameOverScreen.classList.remove('hidden');
-}
-
-function playGameOverEffects() {
-    sounds.explosion.play();
-    document.body.classList.add('explode-effect');
-    setTimeout(() => document.body.classList.remove('explode-effect'), 1000);
-}
-
-function showChallengeResult() {
-    if (!isChallengeMode) return;
     
-    if (currentLevel > challengerScore) {
-        sounds.win.play();
-        elements.funnyTip.textContent = `🔥 YOU CRUSHED ${challengerName}! 🔥`;
-    } else if (currentLevel === challengerScore) {
-        elements.funnyTip.textContent = `😅 TIED WITH ${challengerName}!`;
-    } else {
-        sounds.lose.play();
-        elements.funnyTip.textContent = `💀 ${challengerName} DESTROYED YOU!`;
-    }
-}
-
-// Challenge mode functions
-function showChallengeScreen() {
-    elements.gameOverScreen.classList.add('hidden');
-    elements.challengeScreen.classList.remove('hidden');
-}
-
-function hideChallengeScreen() {
-    elements.challengeScreen.classList.add('hidden');
-    elements.gameOverScreen.classList.remove('hidden');
-}
-
-function generateChallengeLink() {
-    const playerName = elements.playerNameInput.value.trim();
-    const score = currentLevel;
-    const seed = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-    
-    const baseUrl = window.location.href.split('?')[0];
-    let challengeUrl = `${baseUrl}?score=${score}&seed=${seed}`;
-    
-    if (playerName) {
-        challengeUrl += `&player=${encodeURIComponent(playerName)}`;
+    if (isChallengeMode) {
+        if (currentLevel > challengerScore) {
+            sounds.win.play();
+            elements.funnyTip.textContent = `🔥 YOU CRUSHED ${challengerName}! 🔥`;
+        } else if (currentLevel === challengerScore) {
+            elements.funnyTip.textContent = `😅 TIED WITH ${challengerName}!`;
+        } else {
+            sounds.lose.play();
+            elements.funnyTip.textContent = `💀 ${challengerName} DESTROYED YOU!`;
+        }
     }
     
-    elements.shareLinkInput.value = challengeUrl;
-    elements.shareSection.classList.remove('hidden');
-    
-    setupShareButtons(playerName, score, challengeUrl);
+    document.body.classList.add('vibrate');
+    setTimeout(() => document.body.classList.remove('vibrate'), 300);
 }
 
-function setupShareButtons(playerName, score, url) {
-    const shareMessage = playerName 
-        ? `${playerName} scored ${score} in DON'T TOUCH THE FAKE BUTTON! Can you beat them? 😤\n${url}`
-        : `I scored ${score} in DON'T TOUCH THE FAKE BUTTON! Can you beat me? 😤\n${url}`;
-    
-    document.querySelector('.whatsapp-share').onclick = () => {
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
-    };
-    
-    document.querySelector('.telegram-share').onclick = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareMessage)}`, '_blank');
-    };
-}
-
-function copyToClipboard() {
-    elements.shareLinkInput.select();
-    document.execCommand('copy');
-    alert('Challenge link copied!');
-}
-
-function showChallengeAcceptScreen() {
-    elements.challengeMessage.textContent = `${challengerName} CHALLENGED YOU WITH SCORE ${challengerScore}!`;
-    elements.challengeAcceptScreen.classList.remove('hidden');
-}
-
-function acceptChallenge() {
-    isChallengeMode = true;
-    currentLevel = 1;
-    elements.challengeAcceptScreen.classList.add('hidden');
-    startGame();
-}
-
-function declineChallenge() {
-    elements.challengeAcceptScreen.classList.add('hidden');
-    startGame();
-}
-
-function restartGame() {
-    currentLevel = 1;
-    isChallengeMode = false;
-    elements.gameOverScreen.classList.add('hidden');
-    startLevel();
-}
+// Rest of your existing functions (showChallengeScreen, generateChallengeLink, etc.)
+// ... [Keep all other existing functions unchanged]
 
 // Helper functions
 function getFakeButtonText() {
-    const texts = [
-        "TRUST ME", "I'M REAL", "CLICK ME", "SAFE HERE", "NO FAKE", 
-        "100% SAFE", "REAL ONE", "PICK ME", "THIS ONE", "WINNER"
-    ];
-    return randomItem(texts);
+    const texts = ["TRUST ME", "I'M REAL", "CLICK ME", "SAFE HERE", "NO FAKE", "100% SAFE", "REAL ONE", "PICK ME", "THIS ONE", "WINNER"];
+    return texts[Math.floor(Math.random() * texts.length)];
 }
 
 function getRandomFunnyTip() {
@@ -394,11 +260,7 @@ function getRandomFunnyTip() {
         "Button selection is 99% luck, 1% skill.",
         "They get smarter every level. Good luck."
     ];
-    return randomItem(tips);
-}
-
-function randomItem(array) {
-    return array[Math.floor(Math.random() * array.length)];
+    return tips[Math.floor(Math.random() * tips.length)];
 }
 
 // Initialize the game
