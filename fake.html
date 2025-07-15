@@ -2,14 +2,17 @@
 <html>
 <head>
     <title>DON'T TOUCH THE FAKE BUTTON!</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f0c29">
+    <meta name="description" content="Can you find the real button? Test your reflexes in this addictive game!">
     <link rel="stylesheet" href="fake.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Orbitron:wght@500&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
-<body>
+<body class="theme-1">
     <div id="game-container">
         <div id="header">
             <div id="level-display">LEVEL 1</div>
@@ -18,39 +21,45 @@
         <div id="buttons-grid"></div>
         
         <div id="game-over-screen" class="hidden">
-            <h2>GAME OVER!</h2>
-            <p id="final-level">REACHED LEVEL 1</p>
-            <p id="best-level">BEST LEVEL: 1</p>
-            <div class="button-group">
-                <button id="restart-btn">TRY AGAIN</button>
-                <button id="challenge-btn">CHALLENGE</button>
+            <div class="screen-content">
+                <h2>GAME OVER!</h2>
+                <p id="final-level">REACHED LEVEL 1</p>
+                <p id="best-level">BEST LEVEL: 1</p>
+                <div class="button-group">
+                    <button id="restart-btn">TRY AGAIN</button>
+                    <button id="challenge-btn">CHALLENGE</button>
+                </div>
+                <p id="funny-tip">Don't trust buttons that talk, bro.</p>
             </div>
-            <p id="funny-tip">Don't trust buttons that talk, bro.</p>
         </div>
         
         <div id="challenge-screen" class="hidden">
-            <h2>CREATE CHALLENGE</h2>
-            <input type="text" id="player-name" placeholder="Your name (optional)" maxlength="15">
-            <div class="button-group">
-                <button id="generate-link-btn">GENERATE LINK</button>
-                <button id="back-btn">BACK</button>
-            </div>
-            <div id="share-section" class="hidden">
-                <p>SHARE THIS LINK:</p>
-                <input type="text" id="share-link" readonly>
-                <button id="copy-link-btn">COPY</button>
-                <div class="social-share">
-                    <button class="whatsapp-share">WHATSAPP</button>
-                    <button class="telegram-share">TELEGRAM</button>
+            <div class="screen-content">
+                <h2>CREATE CHALLENGE</h2>
+                <input type="text" id="player-name" placeholder="Your name (optional)" maxlength="15">
+                <div class="button-group">
+                    <button id="generate-link-btn">GENERATE LINK</button>
+                    <button id="back-btn">BACK</button>
+                </div>
+                <div id="share-section" class="hidden">
+                    <p>SHARE THIS LINK:</p>
+                    <input type="text" id="share-link" readonly>
+                    <button id="copy-link-btn">COPY</button>
+                    <div class="button-group social-share">
+                        <button class="whatsapp-share">WHATSAPP</button>
+                        <button class="telegram-share">TELEGRAM</button>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div id="challenge-accept-screen" class="hidden">
-            <h2 id="challenge-message"></h2>
-            <div class="button-group">
-                <button id="accept-challenge-btn">ACCEPT</button>
-                <button id="decline-challenge-btn">DECLINE</button>
+            <div class="screen-content">
+                <h2 id="challenge-message"></h2>
+                <div class="button-group">
+                    <button id="accept-challenge-btn">ACCEPT</button>
+                    <button id="decline-challenge-btn">DECLINE</button>
+                </div>
             </div>
         </div>
     </div>
