@@ -253,3 +253,72 @@ button:active {
         align-items: center;
     }
 }
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 600px) {
+    #buttons-grid {
+        gap: 8px;
+        padding: 5px;
+    }
+    
+    .game-button {
+        min-width: 0;
+        max-width: 100%;
+        font-size: 0.7em;
+        border-radius: 10px;
+    }
+    
+    /* Adjust grid columns based on button count */
+    #buttons-grid[style*="4"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    #buttons-grid[style*="6"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    #buttons-grid[style*="9"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    #buttons-grid[style*="12"] {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    /* For higher levels */
+    #buttons-grid[style*="16"] {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    #buttons-grid[style*="20"] {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+    
+    #buttons-grid[style*="25"] {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+}
+
+/* Prevent button text overflow */
+.game-button {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 5px;
+}
+/* Ensure buttons never get too small */
+.game-button {
+    min-width: 50px;
+    min-height: 50px;
+}
+
+/* Better viewport handling */
+@viewport {
+    width: device-width;
+    zoom: 1.0;
+}
+
+/* Prevent text size adjustment */
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
