@@ -1,12 +1,64 @@
 // Sound effects configuration
+// Update your sounds initialization at the top:
 const sounds = {
-    click: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3'] }),
-    explosion: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-8-bit-game-explosion-1691.mp3'] }),
-    timer: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-fast-clock-ticking-1064.mp3'], loop: true }),
-    win: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3'] }),
-    lose: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3'] }),
-    ui: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3'] })
+    click: new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3'],
+        volume: 0.7
+    }),
+    explosion: new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-8-bit-game-explosion-1691.mp3'],
+        volume: 0.5
+    }),
+    timer: new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-fast-clock-ticking-1064.mp3'],
+        loop: true,
+        volume: 0.3
+    }),
+    win: new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3'],
+        volume: 0.6
+    }),
+    lose: new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3'],
+        volume: 0.6
+    }),
+    ui: new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3'],
+        volume: 0.4
+    })
 };
+
+// Add this function to preload sounds:
+function preloadSounds() {
+    Object.values(sounds).forEach(sound => {
+        if (sound.state() === 'unloaded') {
+            sound.load();
+        }
+    });
+}
+
+// Call this at game initialization:
+function init() {
+    preloadSounds();
+    setupEventListeners();
+    checkForChallenge();
+}
+
+// Update your handleButtonClick function:
+function handleButtonClick(index) {
+    if (!gameActive) return;
+    
+    sounds.ui.play(); // Play UI sound first
+    
+    if (index === safeButtonIndex) {
+        setTimeout(() => sounds.click.play(), 50); // Slight delay for better feedback
+        currentLevel++;
+        startLevel();
+    } else {
+        setTimeout(() => sounds.explosion.play(), 50);
+        gameOver();
+    }
+}
 
 // Game state
 let currentLevel = 1;
