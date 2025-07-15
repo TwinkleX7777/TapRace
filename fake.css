@@ -1,5 +1,5 @@
-/* Mobile-First Design */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Orbitron:wght@500&display=swap');
+/* Mobile-First Design with Vibrant Theme */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Orbitron:wght@500&family=Press+Start+2P&display=swap');
 
 * {
     box-sizing: border-box;
@@ -8,53 +8,74 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
 body {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Press Start 2P', cursive;
     background: linear-gradient(135deg, #0f0c29, #302b63);
     color: #fff;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
     touch-action: manipulation;
+    overflow: hidden;
     text-transform: uppercase;
     letter-spacing: 1px;
     position: fixed;
+    transition: background 0.5s ease;
 }
+
+/* Theme classes */
+body.theme-1 { background: linear-gradient(135deg, #0f0c29, #302b63); }
+body.theme-2 { background: linear-gradient(135deg, #23074d, #cc5333); }
+body.theme-3 { background: linear-gradient(135deg, #000000, #434343); }
+body.theme-4 { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); }
+body.theme-5 { background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b); }
+body.theme-6 { background: linear-gradient(135deg, #000428, #004e92); }
+body.theme-7 { background: linear-gradient(135deg, #1e130c, #9a8478); }
+body.theme-8 { background: linear-gradient(135deg, #1a2980, #26d0ce); }
+body.theme-9 { background: linear-gradient(135deg, #ff0084, #33001b); }
+body.theme-10 { background: linear-gradient(135deg, #1f1c2c, #928dab); }
 
 #game-container {
     width: 100%;
     height: 100%;
     max-width: 500px;
     text-align: center;
+    position: relative;
+    padding: 15px;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 #header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: clamp(16px, 4vw, 24px);
-    text-shadow: 0 0 10px rgba(0,255,255,0.7);
+    margin-bottom: 15px;
+    font-size: clamp(12px, 4vw, 18px);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
     flex-shrink: 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #timer {
     color: #ff5555;
     font-weight: bold;
     animation: pulse 1s infinite alternate;
+    font-size: 1.2em;
 }
 
 #buttons-grid {
     display: grid;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
     flex-grow: 1;
     overflow-y: auto;
@@ -69,14 +90,19 @@ body {
     border: none;
     font-size: clamp(14px, 4vw, 18px);
     font-weight: bold;
+    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    user-select: none;
     font-family: 'Poppins', sans-serif;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    transition: transform 0.1s;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s;
     will-change: transform;
+    overflow: hidden;
     padding: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .game-button:active {
@@ -86,17 +112,22 @@ body {
 .game-button.safe {
     background: linear-gradient(145deg, #4CAF50, #2E7D32);
     color: white;
-    box-shadow: 0 5px 0 #1B5E20;
+    box-shadow: 0 5px 0 #1B5E20, 0 0 20px rgba(76, 175, 80, 0.5);
     border: 2px solid #69F0AE;
-    animation: pulse 2s infinite;
+    animation: pulse 2s infinite, glow 3s infinite alternate;
 }
 
 .game-button.fake {
     background: linear-gradient(145deg, #FF5252, #D32F2F);
     color: white;
-    box-shadow: 0 5px 0 #B71C1C;
+    box-shadow: 0 5px 0 #B71C1C, 0 0 20px rgba(255, 82, 82, 0.5);
     border: 2px solid #FF8A80;
 }
+
+/* Fake button deception effects */
+.game-button.fake.trust-me { background: linear-gradient(145deg, #4CAF50, #2E7D32); }
+.game-button.fake.real-one { background: linear-gradient(145deg, #2196F3, #0d47a1); }
+.game-button.fake.winner { background: linear-gradient(145deg, #FFC107, #FF9800); }
 
 /* Dynamic Grid Columns */
 @media (orientation: portrait) {
@@ -113,7 +144,7 @@ body {
 
 /* Screens */
 #game-over-screen, #challenge-screen, #challenge-accept-screen {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -127,21 +158,55 @@ body {
     padding: 20px;
     backdrop-filter: blur(5px);
     overflow-y: auto;
+    text-align: center;
 }
 
-.hidden {
-    display: none !important;
+.screen-content {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    max-width: 90%;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Level up flash effect */
-.level-up {
-    animation: flash 0.5s;
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
 }
 
-@keyframes flash {
-    0% { background-color: normal; }
-    50% { background-color: rgba(255,255,255,0.3); }
-    100% { background-color: normal; }
+button {
+    padding: 12px 24px;
+    font-size: clamp(14px, 4vw, 18px);
+    background: linear-gradient(145deg, #2196F3, #0d47a1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    min-width: 120px;
+    transition: all 0.2s;
+    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+input {
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
 }
 
 /* Animations */
@@ -149,6 +214,12 @@ body {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.05); opacity: 0.8; }
     100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
+    100% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); }
 }
 
 @keyframes comboPop {
@@ -168,6 +239,7 @@ body {
     animation: comboPop 1s forwards;
     z-index: 100;
     pointer-events: none;
+    font-family: 'Press Start 2P', cursive;
 }
 
 /* Vibration effect */
@@ -184,9 +256,74 @@ body {
     animation: vibrate 0.3s linear;
 }
 
-/* Level-based themes */
-body.level-1 { background: linear-gradient(135deg, #0f0c29, #302b63); }
-body.level-5 { background: linear-gradient(135deg, #1a2a6c, #b21f1f); }
-body.level-10 { background: linear-gradient(135deg, #000046, #1CB5E0); }
-body.level-15 { background: linear-gradient(135deg, #23074d, #cc5333); }
-body.level-20 { background: linear-gradient(135deg, #000000, #434343); }
+/* Level up effect */
+@keyframes levelUp {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.level-up {
+    animation: levelUp 0.5s ease;
+}
+
+/* Fake button deception animations */
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-3px, 3px); }
+    40% { transform: translate(-3px, -3px); }
+    60% { transform: translate(3px, 3px); }
+    80% { transform: translate(3px, -3px); }
+    100% { transform: translate(0); }
+}
+
+.glitch {
+    animation: glitch 0.5s infinite;
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.shake {
+    animation: shake 0.2s infinite;
+}
+
+/* Confetti effect */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f00;
+    opacity: 0;
+    animation: confetti 3s ease-out forwards;
+}
+
+@keyframes confetti {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+    #header {
+        font-size: 10px;
+    }
+    .game-button {
+        min-height: 70px;
+        font-size: 12px;
+    }
+}
+
+@media (max-height: 600px) {
+    #header {
+        margin-bottom: 5px;
+    }
+    .game-button {
+        min-height: 60px;
+    }
+}
