@@ -8,17 +8,20 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     font-family: 'Orbitron', sans-serif;
     background: linear-gradient(135deg, #0f0c29, #302b63);
     color: #fff;
-    height: 100vh;
-    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
     touch-action: manipulation;
-    overflow: hidden;
     text-transform: uppercase;
     letter-spacing: 1px;
     position: fixed;
@@ -29,10 +32,9 @@ body {
     height: 100%;
     max-width: 500px;
     text-align: center;
-    position: relative;
-    padding: 10px;
     display: flex;
     flex-direction: column;
+    padding: 10px;
 }
 
 #header {
@@ -67,17 +69,13 @@ body {
     border: none;
     font-size: clamp(14px, 4vw, 18px);
     font-weight: bold;
-    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    user-select: none;
     font-family: 'Poppins', sans-serif;
     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     transition: transform 0.1s;
     will-change: transform;
-    overflow: hidden;
     padding: 5px;
 }
 
@@ -115,7 +113,7 @@ body {
 
 /* Screens */
 #game-over-screen, #challenge-screen, #challenge-accept-screen {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -131,25 +129,19 @@ body {
     overflow-y: auto;
 }
 
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
+.hidden {
+    display: none !important;
 }
 
-button {
-    padding: 12px 24px;
-    font-size: clamp(14px, 4vw, 18px);
-    background: linear-gradient(145deg, #2196F3, #0d47a1);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    min-width: 120px;
+/* Level up flash effect */
+.level-up {
+    animation: flash 0.5s;
+}
+
+@keyframes flash {
+    0% { background-color: normal; }
+    50% { background-color: rgba(255,255,255,0.3); }
+    100% { background-color: normal; }
 }
 
 /* Animations */
@@ -191,7 +183,10 @@ button {
 .vibrate {
     animation: vibrate 0.3s linear;
 }
-.hidden {
-    display: none !important;
-}
 
+/* Level-based themes */
+body.level-1 { background: linear-gradient(135deg, #0f0c29, #302b63); }
+body.level-5 { background: linear-gradient(135deg, #1a2a6c, #b21f1f); }
+body.level-10 { background: linear-gradient(135deg, #000046, #1CB5E0); }
+body.level-15 { background: linear-gradient(135deg, #23074d, #cc5333); }
+body.level-20 { background: linear-gradient(135deg, #000000, #434343); }
