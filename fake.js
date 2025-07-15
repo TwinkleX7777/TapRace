@@ -91,6 +91,23 @@ function checkForChallenge() {
     }
 }
 
+function showChallengeAcceptScreen() {
+    elements.challengeAcceptScreen.classList.remove('hidden');
+    elements.challengeMessage.textContent = `${challengerName} CHALLENGED YOU TO BEAT LEVEL ${challengerScore}!`;
+}
+
+function acceptChallenge() {
+    isChallengeMode = true;
+    elements.challengeAcceptScreen.classList.add('hidden');
+    startGame();
+}
+
+function declineChallenge() {
+    isChallengeMode = false;
+    elements.challengeAcceptScreen.classList.add('hidden');
+    startGame();
+}
+
 function startGame() {
     if (isChallengeMode) {
         Math.seedrandom(challengeSeed);
@@ -241,8 +258,42 @@ function gameOver() {
     setTimeout(() => document.body.classList.remove('vibrate'), 300);
 }
 
-// Rest of your existing functions (showChallengeScreen, generateChallengeLink, etc.)
-// ... [Keep all other existing functions unchanged]
+function restartGame() {
+    currentLevel = 1;
+    elements.gameOverScreen.classList.add('hidden');
+    startGame();
+}
+
+function showChallengeScreen() {
+    elements.gameOverScreen.classList.add('hidden');
+    elements.challengeScreen.classList.remove('hidden');
+}
+
+function hideChallengeScreen() {
+    elements.challengeScreen.classList.add('hidden');
+    elements.gameOverScreen.classList.remove('hidden');
+}
+
+function generateChallengeLink() {
+    const playerName = elements.playerNameInput.value.trim();
+    const seed = Math.random().toString(36).substring(2, 15);
+    const score = currentLevel;
+    
+    let url = window.location.href.split('?')[0];
+    url += `?score=${score}&seed=${seed}`;
+    if (playerName) {
+        url += `&player=${encodeURIComponent(playerName)}`;
+    }
+    
+    elements.shareLinkInput.value = url;
+    elements.shareSection.classList.remove('hidden');
+}
+
+function copyToClipboard() {
+    elements.shareLinkInput.select();
+    document.execCommand('copy');
+    alert('Link copied to clipboard!');
+}
 
 // Helper functions
 function getFakeButtonText() {
