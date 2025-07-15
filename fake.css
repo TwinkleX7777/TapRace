@@ -191,3 +191,7 @@ button {
 .vibrate {
     animation: vibrate 0.3s linear;
 }
+.hidden {
+    display: none !important;
+}
+
