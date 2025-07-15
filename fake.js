@@ -124,6 +124,12 @@ function getButtonCount(level) {
 
 // Create game buttons
 function createButtons(count) {
+    // Clear previous grid styles
+    elements.buttonsGrid.removeAttribute('style');
+    
+    // Set data attribute for responsive CSS
+    elements.buttonsGrid.setAttribute('data-button-count', count);
+    
     for (let i = 0; i < count; i++) {
         const button = document.createElement('button');
         button.className = 'game-button';
@@ -142,7 +148,9 @@ function createButtons(count) {
         elements.buttonsGrid.appendChild(button);
     }
     
-    elements.buttonsGrid.style.gridTemplateColumns = `repeat(${Math.ceil(Math.sqrt(count))}, 1fr)`;
+    // Default grid layout (overridden by media queries when needed)
+    const columns = Math.ceil(Math.sqrt(count));
+    elements.buttonsGrid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 }
 
 // Add behaviors to fake buttons
