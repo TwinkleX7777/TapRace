@@ -327,3 +327,6 @@ input {
         min-height: 60px;
     }
 }
+.hidden {
+    display: none !important;
+}
