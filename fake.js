@@ -57,11 +57,16 @@ function init() {
     });
 
     setupEventListeners();
-    checkForChallenge();
     
-    // Show loading until sounds are ready
+    // Check for challenge and handle appropriately
+    const hasChallenge = checkForChallenge();
+    
     setTimeout(() => {
-        if (!isChallengeMode) startGame();
+        if (hasChallenge) {
+            showChallengeAcceptScreen();
+        } else {
+            startGame();
+        }
     }, 500);
 }
 
@@ -83,17 +88,26 @@ function setupEventListeners() {
 function checkForChallenge() {
     const urlParams = new URLSearchParams(window.location.search);
     const scoreParam = urlParams.get('score');
-    const playerParam = urlParams.get('player');
     const seedParam = urlParams.get('seed');
 
-    if (scoreParam && seedParam) {
+    // Clear URL parameters (even if challenge exists)
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    // Only enable challenge mode if BOTH score and seed exist and are valid
+    if (scoreParam && seedParam && !isNaN(scoreParam)) {
         challengerScore = parseInt(scoreParam, 10);
-        challengerName = playerParam || 'Someone';
+        challengerName = urlParams.get('player') || 'Someone';
         challengeSeed = seedParam;
         isChallengeMode = true;
-        showChallengeAcceptScreen();
+        return true; // Challenge detected
     }
+
+    // No valid challenge found
+    isChallengeMode = false;
+    challengeSeed = null;
+    return false;
 }
+
 
 function startGame() {
     if (isChallengeMode) {
